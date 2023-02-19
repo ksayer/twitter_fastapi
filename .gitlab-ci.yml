@@ -1,0 +1,19 @@
+workflow:
+  rules:
+    - if: $CI_PIPELINE_SOURCE == 'merge_request_event'
+
+image: python:3.11
+
+
+before_script:
+  - poetry install
+
+
+stages:
+  - linters
+
+
+mypy:
+  stage: linters
+  script:
+    - scripts/linters.sh
