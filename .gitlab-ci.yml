@@ -8,12 +8,13 @@ image: python:3.11
 before_script:
   - poetry install
 
-
 stages:
-  - linters
+  - tests
 
 
-mypy:
+tests:
+  tags:
+    - students
   stage: linters
   script:
     - scripts/linters.sh
