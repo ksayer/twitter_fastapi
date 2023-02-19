@@ -1,3 +1,5 @@
+from typing import Dict
+
 import uvicorn
 from fastapi import FastAPI
 
@@ -7,7 +9,7 @@ app = FastAPI(title=settings.PROJECT_NAME)
 
 
 @app.get("/")
-async def hello_world():
+async def hello_world() -> Dict:
     return {"hello": "world"}
 
 
