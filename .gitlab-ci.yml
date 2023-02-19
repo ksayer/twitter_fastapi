@@ -1,0 +1,22 @@
+workflow:
+  rules:
+    - if: $CI_PIPELINE_SOURCE == 'merge_request_event'
+
+image: python:3.11
+
+
+before_script:
+  - pip install poetry
+  - poetry install
+  - source `poetry env info --path`/bin/activate
+
+stages:
+  - test
+
+
+test:
+  tags:
+    - students
+  stage: test
+  script:
+    - scripts/linters.sh
