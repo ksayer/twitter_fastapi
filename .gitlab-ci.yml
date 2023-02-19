@@ -8,7 +8,7 @@ image: python:3.11
 before_script:
   - pip install poetry
   - poetry install
-  - poetry shell
+  - which black
 
 stages:
   - test
