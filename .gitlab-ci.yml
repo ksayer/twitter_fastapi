@@ -9,10 +9,10 @@ before_script:
   - poetry install
 
 stages:
-  - tests
+  - test
 
 
-tests:
+test:
   tags:
     - students
   stage: linters
