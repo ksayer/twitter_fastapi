@@ -13,6 +13,8 @@ pydantic = {extras = ["dotenv"], version = "^1.10.4"}
 sqlalchemy = "^2.0.2"
 alembic = "^1.9.2"
 sqlalchemy-stubs = "^0.4"
+asyncpg = "^0.27.0"
+psycopg2 = "^2.9.5"
 
 
 [tool.poetry.group.linters.dependencies]
