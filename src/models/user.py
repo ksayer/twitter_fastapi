@@ -1,6 +1,6 @@
 from typing import TYPE_CHECKING, List
 
-from sqlalchemy import String
+from sqlalchemy import String, UniqueConstraint
 from sqlalchemy.orm import Mapped, mapped_column, relationship  # type:ignore
 
 from src.db.base import Base
@@ -10,8 +10,11 @@ if TYPE_CHECKING:
 
 
 class User(Base):
+    __table_args__ = (UniqueConstraint('key', name='user_key_unique'),)
+
     id: Mapped[int] = mapped_column(primary_key=True)
     name: Mapped[str] = mapped_column(String(30))
+    key: Mapped[str] = mapped_column(String(64))
     twits: Mapped[List['Twit']] = relationship(  # type: ignore
         back_populates='user', cascade='all, delete-orphan'
     )
