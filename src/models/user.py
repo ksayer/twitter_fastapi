@@ -1,9 +1,20 @@
+from typing import TYPE_CHECKING, List
+
 from sqlalchemy import String
-from sqlalchemy.orm import Mapped, mapped_column  # type:ignore
+from sqlalchemy.orm import Mapped, mapped_column, relationship  # type:ignore
 
 from src.db.base import Base
+
+if TYPE_CHECKING:
+    from .twit import Twit
 
 
 class User(Base):
     id: Mapped[int] = mapped_column(primary_key=True)
     name: Mapped[str] = mapped_column(String(30))
+    twits: Mapped[List['Twit']] = relationship(  # type: ignore
+        back_populates='user', cascade='all, delete-orphan'
+    )
+
+    def repr(self) -> str:
+        return 'User ID={user_id}, {name}'.format(user_id=self.id, name=self.name)
