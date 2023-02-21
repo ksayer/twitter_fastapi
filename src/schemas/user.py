@@ -7,3 +7,10 @@ class UserBase(BaseModel):
 
     class Config:
         orm_mode = True
+
+
+class UserOut(UserBase):
+    id: int
+
+    class Config:
+        orm_mode = True

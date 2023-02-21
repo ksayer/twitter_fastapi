@@ -1,7 +1,7 @@
 from typing import TYPE_CHECKING
 
-from sqlalchemy import ForeignKey, String
-from sqlalchemy.orm import Mapped, mapped_column, relationship  # type:ignore
+from sqlalchemy import ForeignKey
+from sqlalchemy.orm import Mapped, mapped_column, relationship  # type: ignore
 
 from src.db.base import Base
 
@@ -10,8 +10,7 @@ if TYPE_CHECKING:
 
 
 class Twit(Base):
-    id: Mapped[int] = mapped_column(primary_key=True)
-    content: Mapped[str] = mapped_column(String())
+    content: Mapped[str]
     user_id: Mapped[int] = mapped_column(ForeignKey('user.id'))
     user: Mapped['User'] = relationship(back_populates='twits')  # type: ignore
 
