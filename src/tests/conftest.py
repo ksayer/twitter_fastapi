@@ -3,13 +3,18 @@ from typing import AsyncGenerator, Generator
 
 import pytest
 import pytest_asyncio
-from sqlalchemy.ext.asyncio import AsyncSession, create_async_engine
+from httpx import AsyncClient
+from sqlalchemy.ext.asyncio import AsyncConnection, AsyncSession, create_async_engine
 from sqlalchemy.orm import sessionmaker
 
+from src.api.deps import get_session
 from src.db.base import Base
+from src.main import app
 from src.models.user import User
 
-engine = create_async_engine('postgresql+asyncpg://user:pass@localhost/dbtest')
+engine = create_async_engine(
+    'postgresql+asyncpg://user:pass@localhost/dbtest', echo=False
+)
 session = sessionmaker(engine, class_=AsyncSession, expire_on_commit=False)
 
 
@@ -31,22 +36,40 @@ async def db_setup() -> AsyncGenerator:
     """
     async with engine.begin() as conn:
         await conn.run_sync(Base.metadata.create_all)
+    await init_fixture_database()
     yield
     async with engine.begin() as conn:
         await conn.run_sync(Base.metadata.drop_all)
 
 
 @pytest_asyncio.fixture
-async def db(db_setup: AsyncGenerator) -> AsyncGenerator:
+async def db(db_setup: AsyncConnection) -> AsyncGenerator:
     """
     Create session before every test and rollback changes of this session at the end.
     """
     async with session() as sess:
+        async with sess.begin():
+            yield sess
+            await sess.rollback()
+
+
+@pytest_asyncio.fixture(scope="module")
+async def client() -> AsyncGenerator:
+    async with AsyncClient(app=app, base_url='http://localhost') as c:
+        yield c
+
+
+async def override_get_db():
+    async with session() as sess:
         yield sess
-        await sess.rollback()
 
 
-@pytest_asyncio.fixture
-async def create_user(db) -> None:
-    user = User(name='Fix', key='test')
-    db.add(user)
+async def init_fixture_database() -> None:
+    async with session() as sess:
+        async with sess.begin():
+            user = User(name='Fix', key='test11')
+            sess.add(user)
+            await sess.commit()
+
+
+app.dependency_overrides[get_session] = override_get_db
