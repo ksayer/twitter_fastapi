@@ -1,22 +1,41 @@
-workflow:
-  rules:
-    - if: $CI_PIPELINE_SOURCE == 'merge_request_event'
-
-image: python:3.11
-
-
-before_script:
-  - pip install poetry
-  - poetry install
-  - source `poetry env info --path`/bin/activate
+services:
+  - docker:dind
 
 stages:
   - test
-
+  - build
+  - deploy
 
 test:
+  image: python:3.11
   tags:
     - students
   stage: test
   script:
+    - pip install poetry
+    - poetry install
+    - source `poetry env info --path`/bin/activate
     - scripts/linters.sh
+
+build_image:
+  stage: build
+  tags:
+    - twitter-prod
+  only:
+    - master
+  script:
+    - docker login -u "gitlab-ci-token" -p $CI_JOB_TOKEN $CI_REGISTRY
+    - docker-compose build
+    - docker-compose push
+
+deploy_image:
+  stage: deploy
+  tags:
+    - twitter-prod
+  only:
+    - master
+  script:
+    - docker login -u "gitlab-ci-token" -p $CI_JOB_TOKEN $CI_REGISTRY
+    - docker-compose pull
+    - docker-compose down && docker-compose up -d
+    - docker system prune -f
