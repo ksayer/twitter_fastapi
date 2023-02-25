@@ -1,6 +1,10 @@
 FROM python:3.11-alpine
-RUN mkdir /app
-WORKDIR /app
+
+ENV PYTHONDONTWRITEBYTECODE 1
+ENV APP_HOME=/app
+RUN echo $MY_UID
+RUN mkdir $APP_HOME
+WORKDIR $APP_HOME
 
 RUN pip install poetry
 RUN poetry config virtualenvs.create false

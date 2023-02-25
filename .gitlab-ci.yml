@@ -3,6 +3,8 @@ services:
 
 before_script:
   - echo $CI_JOB_TOKEN $CI_REGISTRY
+  - export MY_UID=$(echo $UID)
+  - echo $GID
   - docker login -u "gitlab-ci-token" -p $CI_JOB_TOKEN $CI_REGISTRY
   - printenv >> .env
 
