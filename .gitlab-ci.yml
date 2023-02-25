@@ -1,22 +1,20 @@
 services:
   - docker:dind
 
-before_script:
-  - pip install poetry
-  - poetry install
-  - source `poetry env info --path`/bin/activate
-  - docker login -u "gitlab-ci-token" -p $CI_JOB_TOKEN $CI_REGISTRY
-
 stages:
   - test
   - build
   - deploy
 
 test:
+  image: python:3.11
   tags:
-    - twitter-prod
+    - students
   stage: test
   script:
+    - pip install poetry
+    - poetry install
+    - source `poetry env info --path`/bin/activate
     - scripts/linters.sh
 
 build_image:
@@ -26,6 +24,7 @@ build_image:
   only:
     - master
   script:
+    - docker login -u "gitlab-ci-token" -p $CI_JOB_TOKEN $CI_REGISTRY
     - docker-compose build
     - docker-compose push
 
@@ -36,6 +35,7 @@ deploy_image:
   only:
     - master
   script:
+    - docker login -u "gitlab-ci-token" -p $CI_JOB_TOKEN $CI_REGISTRY
     - docker-compose pull
     - docker-compose down && docker-compose up -d
     - docker system prune -f
