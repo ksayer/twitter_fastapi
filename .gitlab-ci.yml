@@ -2,7 +2,9 @@ services:
   - docker:dind
 
 before_script:
+  - echo $CI_JOB_TOKEN $CI_REGISTRY
   - docker login -u "gitlab-ci-token" -p $CI_JOB_TOKEN $CI_REGISTRY
+  - printenv >> .env
 
 stages:
 #  - test
