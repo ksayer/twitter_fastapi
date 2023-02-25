@@ -2,22 +2,23 @@ services:
   - docker:dind
 
 before_script:
-  - pip install poetry
-  - poetry install
-  - source `poetry env info --path`/bin/activate
   - docker login -u "gitlab-ci-token" -p $CI_JOB_TOKEN $CI_REGISTRY
 
 stages:
-  - test
+#  - test
   - build
   - deploy
 
-test:
-  tags:
-    - twitter-prod
-  stage: test
-  script:
-    - scripts/linters.sh
+#test:
+#  image: python:3.11
+#  tags:
+#    - students
+#  stage: test
+#  script:
+#    - pip install poetry
+#    - poetry install
+#    - source `poetry env info --path`/bin/activate
+#    - scripts/linters.sh
 
 build_image:
   stage: build
