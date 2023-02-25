@@ -8,12 +8,13 @@ from sqlalchemy.ext.asyncio import AsyncConnection, AsyncSession, create_async_e
 from sqlalchemy.orm import sessionmaker
 
 from src.api.deps import get_session
+from src.core.config import settings
 from src.db.base import Base
 from src.main import app
 from src.models.user import User
 
 engine = create_async_engine(
-    'postgresql+asyncpg://user:pass@localhost/dbtest', echo=False
+    settings.TEST_SQLALCHEMY_DATABASE_URI, echo=False
 )
 session = sessionmaker(engine, class_=AsyncSession, expire_on_commit=False)
 

@@ -4,25 +4,22 @@ services:
 before_script:
   - echo $CI_JOB_TOKEN $CI_REGISTRY
   - export MY_UID=$(echo $UID)
-  - echo $GID
   - docker login -u "gitlab-ci-token" -p $CI_JOB_TOKEN $CI_REGISTRY
-  - printenv >> .env
+  - printenv > .env
 
 stages:
-#  - test
+  - test
   - build
   - deploy
 
-#test:
-#  image: python:3.11
-#  tags:
-#    - students
-#  stage: test
-#  script:
-#    - pip install poetry
-#    - poetry install
-#    - source `poetry env info --path`/bin/activate
-#    - scripts/linters.sh
+tests:
+  stage: test
+  tags:
+    - twitter-prod
+  only:
+    - master
+  script:
+    - sh ./scripts/tests.sh
 
 build_image:
   stage: build
@@ -31,7 +28,6 @@ build_image:
   only:
     - master
   script:
-    - docker login -u "gitlab-ci-token" -p $CI_JOB_TOKEN $CI_REGISTRY
     - docker-compose build
     - docker-compose push
 
@@ -42,7 +38,6 @@ deploy_image:
   only:
     - master
   script:
-    - docker login -u "gitlab-ci-token" -p $CI_JOB_TOKEN $CI_REGISTRY
     - docker-compose pull
     - docker-compose down && docker-compose up -d
     - docker system prune -f

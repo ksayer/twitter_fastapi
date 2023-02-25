@@ -10,7 +10,9 @@ class Settings(BaseSettings):
     POSTGRES_DB: str
     POSTGRES_HOST: str
     POSTGRES_PORT: str
+    TEST_POSTGRES_DB: str
     SQLALCHEMY_DATABASE_URI: PostgresDsn | None = None
+    TEST_SQLALCHEMY_DATABASE_URI: PostgresDsn | None = None
     API_PREFIX_V1: str
 
     @validator("SQLALCHEMY_DATABASE_URI", pre=True)
@@ -24,6 +26,19 @@ class Settings(BaseSettings):
             host=values.get("POSTGRES_HOST"),
             port=values.get("POSTGRES_PORT"),
             path=f"/{values.get('POSTGRES_DB') or ''}",
+        )
+
+    @validator("TEST_SQLALCHEMY_DATABASE_URI", pre=True)
+    def assemble_test_db_connection(cls, v: str | None, values: dict[str, Any]) -> Any:
+        if isinstance(v, str):
+            return v
+        return PostgresDsn.build(
+            scheme="postgresql+asyncpg",
+            user=values.get("POSTGRES_USER"),
+            password=values.get("POSTGRES_PASSWORD"),
+            host=values.get("POSTGRES_HOST"),
+            port=values.get("POSTGRES_PORT"),
+            path=f"/{values.get('TEST_POSTGRES_DB') or ''}",
         )
 
     class Config:
