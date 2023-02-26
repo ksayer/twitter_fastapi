@@ -1,15 +1,8 @@
 services:
   - docker:dind
 
-before_script:
-  - export MY_UID=$(echo $UID)
-  - docker login -u "gitlab-ci-token" -p $CI_JOB_TOKEN $CI_REGISTRY
-  - printenv > .env
-
 stages:
   - test
-#  - build
-#  - deploy
 
 test:
   image: python:3.11
@@ -21,24 +14,3 @@ test:
     - poetry install
     - source `poetry env info --path`/bin/activate
     - scripts/linters.sh
-
-#build_image:
-#  stage: build
-#  tags:
-#    - twitter-prod
-#  only:
-#    - master
-#  script:
-#    - docker-compose build
-#    - docker-compose push
-#
-#deploy_image:
-#  stage: deploy
-#  tags:
-#    - twitter-prod
-#  only:
-#    - master
-#  script:
-#    - docker-compose pull
-#    - docker-compose down && docker-compose up -d
-#    - docker system prune -f
