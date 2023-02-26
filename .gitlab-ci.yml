@@ -2,7 +2,6 @@ services:
   - docker:dind
 
 before_script:
-  - echo $CI_JOB_TOKEN $CI_REGISTRY
   - export MY_UID=$(echo $UID)
   - docker login -u "gitlab-ci-token" -p $CI_JOB_TOKEN $CI_REGISTRY
   - printenv > .env
@@ -19,6 +18,7 @@ tests:
   only:
     - master
   script:
+    - export INSTALL_DEV=True
     - sh ./scripts/tests.sh
 
 build_image:
