@@ -14,7 +14,7 @@ from src.main import app
 from src.models.user import User
 
 engine = create_async_engine(
-    settings.TEST_SQLALCHEMY_DATABASE_URI, echo=False
+    settings.TEST_SQLALCHEMY_DATABASE_URI, echo=False  # type: ignore
 )
 session = sessionmaker(engine, class_=AsyncSession, expire_on_commit=False)
 
