@@ -1,19 +1,16 @@
-from typing import Type
-
 from sqlalchemy import select
 from sqlalchemy.ext.asyncio import AsyncSession
 
+from src import schemas
+from src.crud.base import CRUDBase
 from src.models.user import User
 
 
-class CRUDUser:
-    def __init__(self, model: Type[User]):
-        self.model = model
-
-    async def get_all_users(self, db: AsyncSession):
-        query = select(self.model)
-        users = await db.execute(query)
-        return users.scalars().all()
+class CRUDUser(CRUDBase[User, schemas.UserBase]):
+    async def get_by_key(self, db: AsyncSession, *, key: str):
+        query = select(self.model).filter_by(key=key)  # type: ignore
+        user = await db.execute(query)
+        return user.scalars().first()
 
 
 user = CRUDUser(User)

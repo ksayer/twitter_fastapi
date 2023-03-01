@@ -11,7 +11,7 @@ from src.api.deps import get_session
 from src.core.config import settings
 from src.db.base import Base
 from src.main import app
-from src.models.user import User
+from src.models import Twit, User
 
 engine = create_async_engine(
     settings.TEST_SQLALCHEMY_DATABASE_URI, echo=False  # type: ignore
@@ -29,7 +29,7 @@ def event_loop() -> Generator:
     loop.close()
 
 
-@pytest_asyncio.fixture(scope='session')
+@pytest_asyncio.fixture
 async def db_setup() -> AsyncGenerator:
     """
     Create database models and drop after test session
@@ -69,7 +69,8 @@ async def init_fixture_database() -> None:
     async with session() as sess:
         async with sess.begin():
             user = User(name='Fix', key='test11')
-            sess.add(user)
+            twit = Twit(content='text', user_id=1)
+            sess.add_all([user, twit])
             await sess.commit()
 
 
