@@ -7,13 +7,10 @@ from src.db.base_class import Base
 
 if TYPE_CHECKING:
     from .twit import Twit
-    from .user import User
 
 
 class Media(Base):
     file: Mapped[str]
-    user_id: Mapped[int] = mapped_column(ForeignKey('user.id'))
-    user: Mapped['User'] = relationship(back_populates='media')  # type: ignore
     twits: Mapped['MediaTwit'] = relationship(  # type: ignore
         back_populates='media',
         cascade="all, delete-orphan",

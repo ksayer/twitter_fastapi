@@ -12,11 +12,9 @@ async def create_media(
     *,
     db: AsyncSession = Depends(deps.get_session),
     file: UploadFile,
-    current_user: models.User = Depends(deps.get_current_user),
 ):
-    file = await crud.media.create_with_user(
+    file = await crud.media.create(
         db=db,
         file=file,
-        user_id=current_user.id,
     )
     return file

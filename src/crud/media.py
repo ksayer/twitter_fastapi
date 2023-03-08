@@ -9,19 +9,18 @@ from src.utils import get_available_name
 
 
 class CRUDMedia(CRUDBase[Media, CreateSchemaType]):
-    async def create_with_user(
+    async def create(
         self,
         db: AsyncSession,
         *,
         file: UploadFile,
-        user_id: int,
     ):
         filename = get_available_name(file.filename)
         path = settings.MEDIA_ROOT + filename
         async with aiofiles.open(path, 'wb') as new_file:
             content = file.file.read()
             await new_file.write(content)
-        db_obj = self.model(file=filename, user_id=user_id)
+        db_obj = self.model(file=filename)
         db.add(db_obj)
         await db.commit()
         return db_obj
