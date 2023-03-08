@@ -1,3 +1,4 @@
+import os
 from typing import Any
 
 from pydantic import BaseSettings, PostgresDsn, validator
@@ -14,6 +15,15 @@ class Settings(BaseSettings):
     SQLALCHEMY_DATABASE_URI: PostgresDsn | None = None
     TEST_SQLALCHEMY_DATABASE_URI: PostgresDsn | None = None
     API_PREFIX_V1: str
+    MEDIA_ROOT: str
+
+    @validator("MEDIA_ROOT", pre=True)
+    def assemble_media_root(cls, value: str | None):
+        src_dir = os.path.dirname(os.path.dirname(os.path.abspath(__file__)))
+        media_root = '/'.join([src_dir, value])  # type: ignore
+        if not os.path.exists(media_root):
+            os.mkdir(media_root)
+        return media_root
 
     @validator("SQLALCHEMY_DATABASE_URI", pre=True)
     def assemble_db_connection(cls, v: str | None, values: dict[str, Any]) -> Any:
@@ -43,7 +53,7 @@ class Settings(BaseSettings):
 
     class Config:
         case_sensitive = True
-        env_file = ".env"
+        env_file = "../.env"
 
 
-settings = Settings()
+settings = Settings()  # type: ignore

@@ -1,8 +1,11 @@
 import asyncio
+import os
+from io import BytesIO
 from typing import AsyncGenerator, Generator
 
 import pytest
 import pytest_asyncio
+from fastapi import UploadFile
 from httpx import AsyncClient
 from sqlalchemy.ext.asyncio import AsyncConnection, AsyncSession, create_async_engine
 from sqlalchemy.orm import sessionmaker
@@ -17,6 +20,9 @@ engine = create_async_engine(
     settings.TEST_SQLALCHEMY_DATABASE_URI, echo=False  # type: ignore
 )
 session = sessionmaker(engine, class_=AsyncSession, expire_on_commit=False)
+
+
+USER_API_KEY = 'test11'
 
 
 @pytest.fixture(scope="session")
@@ -35,12 +41,14 @@ async def db_setup() -> AsyncGenerator:
     Create database models and drop after test session
     :return:
     """
-    async with engine.begin() as conn:
-        await conn.run_sync(Base.metadata.create_all)
-    await init_fixture_database()
-    yield
-    async with engine.begin() as conn:
-        await conn.run_sync(Base.metadata.drop_all)
+    try:
+        async with engine.begin() as conn:
+            await conn.run_sync(Base.metadata.create_all)
+        await init_fixture_database()
+        yield
+    finally:
+        async with engine.begin() as conn:
+            await conn.run_sync(Base.metadata.drop_all)
 
 
 @pytest_asyncio.fixture
@@ -49,9 +57,8 @@ async def db(db_setup: AsyncConnection) -> AsyncGenerator:
     Create session before every test and rollback changes of this session at the end.
     """
     async with session() as sess:
-        async with sess.begin():
-            yield sess
-            await sess.rollback()
+        yield sess
+        await sess.rollback()
 
 
 @pytest_asyncio.fixture(scope="module")
@@ -68,10 +75,31 @@ async def override_get_db():
 async def init_fixture_database() -> None:
     async with session() as sess:
         async with sess.begin():
-            user = User(name='Fix', key='test11')
+            user = User(name='Fix', key=USER_API_KEY)
             twit = Twit(content='text', user_id=1)
             sess.add_all([user, twit])
             await sess.commit()
+
+
+@pytest.fixture
+def user_api_key() -> dict:
+    return {'api-key': USER_API_KEY}
+
+
+@pytest.fixture
+def file_fixture(request):
+    name = request.param
+    file_name = '%s%s' % (settings.MEDIA_ROOT, name)
+    open(file_name, 'w').close()
+    yield name
+    os.remove(file_name)
+
+
+@pytest.fixture
+def uploaded_file():
+    filename = 'asdfjhasdfk.jpeg'
+    yield UploadFile(filename, BytesIO(b'binary_data'))
+    os.remove(os.path.join(settings.MEDIA_ROOT, filename))
 
 
 app.dependency_overrides[get_session] = override_get_db
