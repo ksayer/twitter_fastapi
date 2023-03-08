@@ -1,6 +1,6 @@
 from fastapi import APIRouter
 
-from src.api.api_v1.endpoints import twits, users, media
+from src.api.api_v1.endpoints import media, twits, users
 
 api_router = APIRouter()
 api_router.include_router(users.router, prefix='/users', tags=['users'])

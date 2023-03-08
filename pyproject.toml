@@ -15,7 +15,6 @@ alembic = "^1.9.2"
 sqlalchemy-stubs = "^0.4"
 asyncpg = "^0.27.0"
 python-multipart = "^0.0.6"
-aiofiles = "^23.1.0"
 
 
 [tool.poetry.group.linters.dependencies]
@@ -30,6 +29,8 @@ pytest = "^7.2.1"
 pytest-cov = "^4.0.0"
 pytest-asyncio = "^0.20.3"
 httpx = "^0.23.3"
+aiofiles = "^23.1.0"
+types-aiofiles = "^22.1.0.9"
 
 [build-system]
 requires = ["poetry-core"]

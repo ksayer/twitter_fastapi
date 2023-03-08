@@ -20,7 +20,7 @@ class Settings(BaseSettings):
     @validator("MEDIA_ROOT", pre=True)
     def assemble_media_root(cls, value: str | None):
         src_dir = os.path.dirname(os.path.dirname(os.path.abspath(__file__)))
-        media_root = '/'.join([src_dir, value])
+        media_root = '/'.join([src_dir, value])  # type: ignore
         if not os.path.exists(media_root):
             os.mkdir(media_root)
         return media_root
@@ -56,4 +56,4 @@ class Settings(BaseSettings):
         env_file = "../.env"
 
 
-settings = Settings()
+settings = Settings()  # type: ignore
