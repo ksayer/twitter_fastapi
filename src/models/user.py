@@ -12,6 +12,7 @@ if TYPE_CHECKING:
 class User(Base):
     __table_args__ = (UniqueConstraint('key', name='user_key_unique'),)
 
+    id: Mapped[int] = mapped_column(primary_key=True)
     name: Mapped[str] = mapped_column(String(30))
     key: Mapped[str] = mapped_column(String(64))
     twits: Mapped[List['Twit']] = relationship(

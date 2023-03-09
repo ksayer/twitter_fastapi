@@ -9,7 +9,7 @@ pytestmark = pytest.mark.asyncio
 
 
 async def test_create_twit(client: AsyncClient, db: AsyncSession):
-    twit_data = {'content': 'twitcontent'}
+    twit_data = {'tweet_data': 'twitcontent'}
     headers = {'api-key': 'test11'}
     url = f'{settings.API_PREFIX_V1}/twits/'
     response = await client.post(url, json=twit_data, headers=headers)

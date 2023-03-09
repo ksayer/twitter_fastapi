@@ -17,8 +17,8 @@ class CRUDMedia(CRUDBase[Media, CreateSchemaType]):
     ):
         filename = get_available_name(file.filename)
         path = settings.MEDIA_ROOT + filename
+        content = file.file.read()
         async with aiofiles.open(path, 'wb') as new_file:
-            content = file.file.read()
             await new_file.write(content)
         db_obj = self.model(file=filename)
         db.add(db_obj)

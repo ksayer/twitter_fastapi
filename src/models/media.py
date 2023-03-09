@@ -10,6 +10,7 @@ if TYPE_CHECKING:
 
 
 class Media(Base):
+    id: Mapped[int] = mapped_column(primary_key=True)
     file: Mapped[str]
 
     def __repr__(self):
@@ -17,12 +18,11 @@ class Media(Base):
 
 
 class MediaTwit(Base):
-    id = None  # type: ignore
     media_id: Mapped[int] = mapped_column(
         ForeignKey('media.id'), nullable=False, primary_key=True, index=True
     )
-    twit_id: Mapped[int] = mapped_column(
-        ForeignKey('twit.id'), nullable=False, primary_key=True, index=True
+    tweet_id: Mapped[int] = mapped_column(
+        ForeignKey('twit.tweet_id'), nullable=False, primary_key=True, index=True
     )
     media: Mapped[Media] = relationship()  # type: ignore
     twit: Mapped['Twit'] = relationship(back_populates='mediatwit')  # type: ignore

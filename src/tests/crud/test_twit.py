@@ -13,7 +13,7 @@ async def test_fixture(db: AsyncSession):
 
 
 async def test_get_twits(db: AsyncSession):
-    twit = Twit(content='another content', user_id=1)
+    twit = Twit(tweet_data='another content', user_id=1)
     db.add(twit)
     twits = await crud.twit.get_multi(db)
     assert len(twits) == 2

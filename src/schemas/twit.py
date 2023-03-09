@@ -1,8 +1,8 @@
-from pydantic import BaseModel, Field
+from pydantic import BaseModel
 
 
 class TwitIn(BaseModel):
-    content: str
+    tweet_data: str
     tweet_media_ids: list[int] | None
 
     class Config:
@@ -10,7 +10,7 @@ class TwitIn(BaseModel):
 
 
 class TwitOut(BaseModel):
-    id: int
+    tweet_id: int
     result: bool = True
 
     class Config:

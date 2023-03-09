@@ -4,7 +4,6 @@ from sqlalchemy.orm import DeclarativeBase  # type: ignore
 
 
 class Base(DeclarativeBase):
-    id = Column(Integer, primary_key=True)
 
     @declared_attr
     def __tablename__(cls) -> str:
