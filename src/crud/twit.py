@@ -9,24 +9,26 @@ from src.crud.base import CRUDBase
 from src.models import Twit, Media
 
 
-class CRUDTwit(CRUDBase[Twit, schemas.TwitBase]):
+class CRUDTwit(CRUDBase[Twit, schemas.TwitIn]):
     async def create_with_user(
-        self, db: AsyncSession, *, obj_in: schemas.TwitBase, user_id: int
+        self, db: AsyncSession, *, obj_in: schemas.TwitIn, user_id: int
     ):
         obj_in_data = jsonable_encoder(obj_in)
         media_ids = obj_in_data.pop('tweet_media_ids')
-        if media_ids:
-            await self.validate_ids(db, media_ids)
+        media_list = await self.get_media(db, media_ids) if media_ids else []
         db_obj = self.model(**obj_in_data, user_id=user_id)
+        db_obj.media.extend(media_list)
         db.add(db_obj)
         await db.commit()
         return db_obj
 
-    async def validate_ids(self, db, ids):
-        query = select(func.count(Media.id)).where(Media.id.in_(ids))
+    async def get_media(self, db: AsyncSession, ids: list[int]):
+        query = select(Media).where(Media.id.in_(ids))
         result = await db.execute(query)
-        if result.scalars().first() != len(ids):
+        media_list = result.scalars().all()
+        if len(media_list) != len(ids):
             raise HTTPException(status_code=404, detail="media not found")
+        return media_list
 
 
 twit = CRUDTwit(Twit)

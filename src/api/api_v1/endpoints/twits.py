@@ -11,7 +11,7 @@ router = APIRouter()
 async def create_twit(
     *,
     db: AsyncSession = Depends(deps.get_session),
-    twit_in: schemas.TwitBase,
+    twit_in: schemas.TwitIn,
     current_user: models.User = Depends(deps.get_current_user),
 ):
     twit = await crud.twit.create_with_user(
