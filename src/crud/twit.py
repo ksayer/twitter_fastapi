@@ -30,7 +30,9 @@ class CRUDTwit(CRUDBase[Twit, schemas.TwitIn]):
         return media_list
 
     async def delete_users_tweet(self, db: AsyncSession, twit_id: int, user_id: int):
-        query = select(self.model).filter_by(tweet_id=twit_id, user_id=user_id)
+        query = select(self.model).filter_by(  # type: ignore
+            tweet_id=twit_id, user_id=user_id
+        )
         user_twit = await db.execute(query)
         user_twit = user_twit.scalars().first()
         if not user_twit:
