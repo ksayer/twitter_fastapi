@@ -23,4 +23,4 @@ async def test_create_media(
     file_in_db = await media.get_multi(db, file=uploaded_file.filename)
     assert response.status_code == 201
     assert os.path.exists(os.path.join(settings.MEDIA_ROOT, uploaded_file.filename))
-    assert file_in_db[0].user_id == 1 and file_in_db[0].file == uploaded_file.filename
+    assert file_in_db[0].file == uploaded_file.filename

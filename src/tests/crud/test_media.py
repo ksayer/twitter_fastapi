@@ -11,9 +11,8 @@ pytestmark = pytest.mark.asyncio
 
 
 async def test_create_media(db: AsyncSession, uploaded_file: UploadFile):
-    await media.create_with_user(db, file=uploaded_file, user_id=1)
+    await media.create_and_save_file(db, file=uploaded_file)
     file_in_db = await media.get_multi(db, file=uploaded_file.filename)
     assert file_in_db
     assert os.path.exists(os.path.join(settings.MEDIA_ROOT, uploaded_file.filename))
-    assert file_in_db[0].user_id == 1
-    assert file_in_db[0].user_id == 1 and file_in_db[0].file == uploaded_file.filename
+    assert file_in_db[0].file == uploaded_file.filename

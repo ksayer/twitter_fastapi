@@ -76,7 +76,7 @@ async def init_fixture_database() -> None:
     async with session() as sess:
         async with sess.begin():
             user = User(name='Fix', key=USER_API_KEY)
-            twit = Twit(content='text', user_id=1)
+            twit = Twit(tweet_data='text', user_id=1)
             sess.add_all([user, twit])
             await sess.commit()
 

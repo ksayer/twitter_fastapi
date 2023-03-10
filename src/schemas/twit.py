@@ -1,16 +1,17 @@
 from pydantic import BaseModel
 
 
-class TwitBase(BaseModel):
-    content: str
+class TwitIn(BaseModel):
+    tweet_data: str
+    tweet_media_ids: list[int] | None = None
 
     class Config:
         orm_mode = True
 
 
-class TwitOut(TwitBase):
-    id: int
-    user_id: int
+class TwitOut(BaseModel):
+    tweet_id: int
+    result: bool = True
 
     class Config:
         orm_mode = True
