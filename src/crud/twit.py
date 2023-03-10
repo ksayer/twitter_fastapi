@@ -1,12 +1,11 @@
 from fastapi import HTTPException
 from fastapi.encoders import jsonable_encoder
-from pydantic import ValidationError
-from sqlalchemy import exists, select, func
+from sqlalchemy import select
 from sqlalchemy.ext.asyncio import AsyncSession
 
 from src import schemas
 from src.crud.base import CRUDBase
-from src.models import Twit, Media
+from src.models import Media, Twit
 
 
 class CRUDTwit(CRUDBase[Twit, schemas.TwitIn]):

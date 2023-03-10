@@ -1,14 +1,8 @@
 from pydantic import BaseModel
 
 
-class MediaIn(BaseModel):
-    id: int = None
-
-    class Config:
-        orm_mode = True
-
-
-class MediaOut(MediaIn):
+class MediaOut(BaseModel):
+    id: int
     file: str
 
     class Config:

@@ -3,7 +3,7 @@ from pydantic import BaseModel
 
 class TwitIn(BaseModel):
     tweet_data: str
-    tweet_media_ids: list[int] | None
+    tweet_media_ids: list[int] | None = None
 
     class Config:
         orm_mode = True

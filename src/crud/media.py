@@ -9,11 +9,11 @@ from src.utils import get_available_name
 
 
 class CRUDMedia(CRUDBase[Media, CreateSchemaType]):
-    async def create(
+    async def create_and_save_file(
         self,
         db: AsyncSession,
         *,
-        file: UploadFile,
+        file: UploadFile,  # type: ignore
     ):
         filename = get_available_name(file.filename)
         path = settings.MEDIA_ROOT + filename
