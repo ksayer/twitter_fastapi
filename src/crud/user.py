@@ -1,3 +1,4 @@
+from fastapi import HTTPException
 from sqlalchemy import select
 from sqlalchemy.ext.asyncio import AsyncSession
 
@@ -10,7 +11,10 @@ class CRUDUser(CRUDBase[User, schemas.UserBase]):
     async def get_by_key(self, db: AsyncSession, *, key: str):
         query = select(self.model).filter_by(key=key)  # type: ignore
         user = await db.execute(query)
-        return user.scalars().first()
+        user = user.scalars().first()
+        if not user:
+            raise HTTPException(status_code=404, detail='user not found')
+        return user
 
 
 user = CRUDUser(User)
