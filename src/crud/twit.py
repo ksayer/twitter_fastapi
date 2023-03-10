@@ -29,5 +29,15 @@ class CRUDTwit(CRUDBase[Twit, schemas.TwitIn]):
             raise HTTPException(status_code=404, detail="media not found")
         return media_list
 
+    async def delete_users_tweet(self, db: AsyncSession, twit_id: int, user_id: int):
+        query = select(self.model).filter_by(tweet_id=twit_id, user_id=user_id)
+        user_twit = await db.execute(query)
+        user_twit = user_twit.scalars().first()
+        if not user_twit:
+            raise HTTPException(status_code=404, detail="twit not found")
+        await db.delete(user_twit)
+        await db.commit()
+        return True
+
 
 twit = CRUDTwit(Twit)
