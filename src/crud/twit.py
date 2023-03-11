@@ -1,9 +1,11 @@
+from typing import Any
+
 from fastapi import HTTPException
 from fastapi.encoders import jsonable_encoder
 from sqlalchemy import select
 from sqlalchemy.ext.asyncio import AsyncSession
 
-from src import schemas
+from src import crud, schemas
 from src.crud.base import CRUDBase
 from src.models import Media, Twit
 
@@ -40,6 +42,15 @@ class CRUDTwit(CRUDBase[Twit, schemas.TwitIn]):
         await db.delete(user_twit)
         await db.commit()
         return True
+
+    async def set_like(self, db: AsyncSession, twit_id: int, user_id: int):
+        twit: Any = await self.get(db, tweet_id=twit_id)
+        user = await crud.user.get(db, id=user_id)
+        if user in twit.likes:
+            raise HTTPException(status_code=400, detail='Like already set')
+        twit.likes.append(user)
+        await db.commit()
+        return twit
 
 
 twit = CRUDTwit(Twit)

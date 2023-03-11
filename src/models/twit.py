@@ -25,6 +25,12 @@ class Twit(Base):
         'media',
         creator=lambda media: MediaTwit(media=media),
     )
+    like: Mapped[list['Like']] = relationship(  # type: ignore
+        back_populates='twit', cascade='all, delete-orphan', lazy='selectin'
+    )
+    likes: AssociationProxy[list['User']] = association_proxy(  # type: ignore
+        'like', 'user', creator=lambda user: Like(user=user)
+    )
 
     def repr(self) -> str:
         return 'Twit ID={twit_id} of {user}'.format(
@@ -33,3 +39,14 @@ class Twit(Base):
 
     def to_json(self) -> dict[str, Any]:
         return {c.name: getattr(self, c.name) for c in self.__table__.columns}
+
+
+class Like(Base):
+    twit_id: Mapped[int] = mapped_column(
+        ForeignKey('twit.tweet_id'), nullable=False, primary_key=True, index=True
+    )
+    user_id: Mapped[int] = mapped_column(
+        ForeignKey('user.id'), nullable=False, primary_key=True, index=True
+    )
+    twit: Mapped[Twit] = relationship(back_populates='like')  # type: ignore
+    user: Mapped['User'] = relationship()  # type: ignore

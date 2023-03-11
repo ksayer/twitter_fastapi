@@ -51,3 +51,14 @@ async def test_deleting_wrong_twit(
     twits = await crud.twit.get_multi(db)
     assert len(twits) == 1
     assert response.status_code == 404
+
+
+async def test_api_setting_like(
+    client: AsyncClient, db: AsyncSession, user_api_key: dict
+):
+    twit = await TwitFactory.create()
+    url = f'{settings.API_PREFIX_V1}/twits/{twit.tweet_id}/likes/'
+    response = await client.post(url, headers=user_api_key)
+    assert response.status_code == 200
+    twit = await crud.twit.get(db, tweet_id=twit.tweet_id)
+    assert len(twit.likes) == 1
