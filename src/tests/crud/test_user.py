@@ -2,7 +2,7 @@ import pytest
 from sqlalchemy.ext.asyncio import AsyncSession
 
 from src import crud
-from src.tests.factories import UserFactory, TwitFactory
+from src.tests.factories import TwitFactory, UserFactory
 
 pytestmark = pytest.mark.asyncio
 

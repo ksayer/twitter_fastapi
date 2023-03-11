@@ -1,8 +1,9 @@
+from typing import Any
+
 import factory
 from factory import fuzzy
-from sqlalchemy.ext.asyncio import AsyncSession
 
-from src.models import User, Twit
+from src.models import Media, Twit, User
 from src.tests.conftest import session
 
 
@@ -24,7 +25,7 @@ class UserFactory(AsyncAlchemyModelFactory):
     class Meta:
         model = User
 
-    name = factory.Faker('first_name')
+    name: Any = factory.Faker('first_name')
     key = fuzzy.FuzzyText(length=15)
 
 
@@ -33,7 +34,7 @@ class TwitFactory(factory.alchemy.SQLAlchemyModelFactory):
         model = Twit
 
     tweet_data = fuzzy.FuzzyText(length=15)
-    user = factory.SubFactory(UserFactory)
+    user: Any = factory.SubFactory(UserFactory)
 
     @classmethod
     async def _create(cls, model_class, *args, **kwargs):
@@ -47,3 +48,10 @@ class TwitFactory(factory.alchemy.SQLAlchemyModelFactory):
             db.add(obj)
             await db.commit()
             return obj
+
+
+class MediaFactory(AsyncAlchemyModelFactory):
+    class Meta:
+        model = Media
+
+    file: Any = factory.Faker('file_name')
