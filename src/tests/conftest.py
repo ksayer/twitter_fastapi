@@ -95,11 +95,23 @@ def file_fixture(request):
     os.remove(file_name)
 
 
-@pytest.fixture
-def uploaded_file():
+@pytest_asyncio.fixture
+async def uploaded_file():
     filename = 'asdfjhasdfk.jpeg'
     yield UploadFile(filename, BytesIO(b'binary_data'))
     os.remove(os.path.join(settings.MEDIA_ROOT, filename))
+
+
+@pytest_asyncio.fixture
+async def twit_with_media():
+    from src.tests.factories import MediaFactory, TwitFactory
+
+    media = await MediaFactory.create()
+    twit = TwitFactory.build()
+    obj_in = twit.to_json()
+    obj_in.pop('user_id')
+    obj_in['tweet_media_ids'] = [media.id]
+    return obj_in
 
 
 app.dependency_overrides[get_session] = override_get_db
