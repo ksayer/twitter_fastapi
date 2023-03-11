@@ -29,3 +29,14 @@ async def delete_users_twit(
 ):
     await crud.twit.delete_users_tweet(db, twit_id=id, user_id=current_user.id)
     return {'result': True}
+
+
+@router.post('/{id}/likes/', status_code=200)
+async def set_like(
+    *,
+    db: AsyncSession = Depends(deps.get_session),
+    id: int,
+    current_user: models.User = Depends(deps.get_current_user),
+):
+    await crud.twit.set_like(db, twit_id=id, user_id=current_user.id)
+    return {'result': True}

@@ -15,6 +15,11 @@ class CRUDBase(Generic[ModelType, CreateSchemaType]):
     def __init__(self, model: Type[ModelType]):
         self.model = model
 
+    async def get(self, db: AsyncSession, **kwargs) -> ModelType | None:
+        query = select(self.model).filter_by(**kwargs)  # type: ignore
+        result = await db.execute(query)
+        return result.scalars().first()
+
     async def get_multi(
         self, db: AsyncSession, *, skip: int = 0, limit: int = 100, **kwargs
     ):
