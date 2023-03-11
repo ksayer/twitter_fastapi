@@ -5,6 +5,7 @@ from typing import AsyncGenerator, Generator
 
 import pytest
 import pytest_asyncio
+from factory.base import BaseFactory
 from fastapi import UploadFile
 from httpx import AsyncClient
 from sqlalchemy.ext.asyncio import AsyncConnection, AsyncSession, create_async_engine
@@ -100,6 +101,12 @@ def uploaded_file():
     filename = 'asdfjhasdfk.jpeg'
     yield UploadFile(filename, BytesIO(b'binary_data'))
     os.remove(os.path.join(settings.MEDIA_ROOT, filename))
+
+
+@pytest.fixture(autouse=True)
+def init_factories(db: AsyncSession) -> None:
+    """Init factories."""
+    BaseFactory.session = db
 
 
 app.dependency_overrides[get_session] = override_get_db

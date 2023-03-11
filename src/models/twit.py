@@ -1,4 +1,4 @@
-from typing import TYPE_CHECKING
+from typing import TYPE_CHECKING, Any
 
 from sqlalchemy import ForeignKey
 from sqlalchemy.ext.associationproxy import AssociationProxy, association_proxy
@@ -30,3 +30,6 @@ class Twit(Base):
         return 'Twit ID={twit_id} of {user}'.format(
             twit_id=self.id, user=self.user.name
         )
+
+    def to_json(self) -> dict[str, Any]:
+        return {c.name: getattr(self, c.name) for c in self.__table__.columns}

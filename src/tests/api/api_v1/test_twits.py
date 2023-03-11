@@ -9,24 +9,22 @@ from src.core.config import settings
 pytestmark = pytest.mark.asyncio
 
 
-async def test_create_twit(client: AsyncClient, db: AsyncSession):
+async def test_create_twit(client: AsyncClient, db: AsyncSession, user_api_key: dict):
     twit_data = {'tweet_data': 'twitcontent'}
-    headers = {'api-key': 'test11'}
     url = f'{settings.API_PREFIX_V1}/twits/'
-    response = await client.post(url, json=twit_data, headers=headers)
+    response = await client.post(url, json=twit_data, headers=user_api_key)
     assert response.status_code == 201
     twits = await crud.twit.get_multi(db)
     assert len(twits) == 2
 
 
 async def test_create_twit_with_media(
-    client: AsyncClient, db: AsyncSession, uploaded_file: UploadFile
+    client: AsyncClient, db: AsyncSession, uploaded_file: UploadFile, user_api_key: dict
 ):
     media = await crud.media.create_and_save_file(db, file=uploaded_file)
     twit_data = {'tweet_data': 'twitcontent', 'tweet_media_ids': [media.id]}
-    headers = {'api-key': 'test11'}
     url = f'{settings.API_PREFIX_V1}/twits/'
-    response = await client.post(url, json=twit_data, headers=headers)
+    response = await client.post(url, json=twit_data, headers=user_api_key)
     assert response.status_code == 201
     twits = await crud.twit.get_multi(db)
     assert len(twits) == 2
@@ -34,12 +32,11 @@ async def test_create_twit_with_media(
     assert len(twits[0].media) == 0
 
 
-async def test_deleting_twit(client: AsyncClient, db: AsyncSession):
-    headers = {'api-key': 'test11'}
+async def test_deleting_twit(client: AsyncClient, db: AsyncSession, user_api_key: dict):
     url = f'{settings.API_PREFIX_V1}/twits/1/'
     twits = await crud.twit.get_multi(db)
     assert len(twits) == 1
-    response = await client.delete(url, headers=headers)
+    response = await client.delete(url, headers=user_api_key)
     twits = await crud.twit.get_multi(db)
     assert len(twits) == 0
     assert response.status_code == 200

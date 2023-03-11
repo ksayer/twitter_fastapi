@@ -13,7 +13,7 @@ class CRUDTwit(CRUDBase[Twit, schemas.TwitIn]):
         self, db: AsyncSession, *, obj_in: schemas.TwitIn, user_id: int
     ):
         obj_in_data = jsonable_encoder(obj_in)
-        media_ids = obj_in_data.pop('tweet_media_ids')
+        media_ids = obj_in_data.pop('tweet_media_ids', [])
         media_list = await self.get_media(db, media_ids) if media_ids else []
         db_obj = self.model(**obj_in_data, user_id=user_id)
         db_obj.media.extend(media_list)
