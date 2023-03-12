@@ -28,7 +28,7 @@ class Twit(Base):
     like: Mapped[list['Like']] = relationship(  # type: ignore
         back_populates='twit', cascade='all, delete-orphan', lazy='selectin'
     )
-    likes: AssociationProxy[list['User']] = association_proxy(  # type: ignore
+    liked_users: AssociationProxy[list['User']] = association_proxy(  # type: ignore
         'like', 'user', creator=lambda user: Like(user=user)
     )
 
@@ -49,4 +49,4 @@ class Like(Base):
         ForeignKey('user.id'), nullable=False, primary_key=True, index=True
     )
     twit: Mapped[Twit] = relationship(back_populates='like')  # type: ignore
-    user: Mapped['User'] = relationship()  # type: ignore
+    user: Mapped['User'] = relationship(lazy='selectin')  # type: ignore
