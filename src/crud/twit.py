@@ -52,5 +52,10 @@ class CRUDTwit(CRUDBase[Twit, schemas.TwitIn]):
         await db.commit()
         return twit
 
+    async def delete_like(self, db: AsyncSession, twit_id: int, user_id: int):
+        deleting_like = await crud.like.get(db, twit_id=twit_id, user_id=user_id)
+        await db.delete(deleting_like)
+        await db.commit()
+
 
 twit = CRUDTwit(Twit)
