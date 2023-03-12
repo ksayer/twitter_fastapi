@@ -61,4 +61,6 @@ async def test_api_setting_like(
     response = await client.post(url, headers=user_api_key)
     assert response.status_code == 200
     twit = await crud.twit.get(db, tweet_id=twit.tweet_id)
-    assert len(twit.likes) == 1
+    assert twit.liked_users[0].key == user_api_key['api-key']
+    response = await client.post(url, headers=user_api_key)
+    assert response.status_code == 400
