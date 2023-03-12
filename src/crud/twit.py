@@ -46,11 +46,16 @@ class CRUDTwit(CRUDBase[Twit, schemas.TwitIn]):
     async def set_like(self, db: AsyncSession, twit_id: int, user_id: int):
         twit: Any = await self.get(db, tweet_id=twit_id)
         user = await crud.user.get(db, id=user_id)
-        if user in twit.likes:
+        if user in twit.liked_users:
             raise HTTPException(status_code=400, detail='Like already set')
-        twit.likes.append(user)
+        twit.liked_users.append(user)
         await db.commit()
         return twit
+
+    async def delete_like(self, db: AsyncSession, twit_id: int, user_id: int):
+        deleting_like = await crud.like.get(db, twit_id=twit_id, user_id=user_id)
+        await db.delete(deleting_like)
+        await db.commit()
 
 
 twit = CRUDTwit(Twit)

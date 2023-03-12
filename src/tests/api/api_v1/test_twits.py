@@ -4,7 +4,7 @@ from sqlalchemy.ext.asyncio import AsyncSession
 
 from src import crud
 from src.core.config import settings
-from src.tests.factories import TwitFactory
+from src.tests.factories import LikeFactory, TwitFactory
 
 pytestmark = pytest.mark.asyncio
 
@@ -61,4 +61,23 @@ async def test_api_setting_like(
     response = await client.post(url, headers=user_api_key)
     assert response.status_code == 200
     twit = await crud.twit.get(db, tweet_id=twit.tweet_id)
-    assert len(twit.likes) == 1
+    assert twit.liked_users[0].key == user_api_key['api-key']
+    response = await client.post(url, headers=user_api_key)
+    assert response.status_code == 400
+
+
+async def test_api_deleting_like(client: AsyncClient, db: AsyncSession):
+    like = await LikeFactory.create()
+    url = f'{settings.API_PREFIX_V1}/twits/{like.twit_id}/likes/'
+    response = await client.delete(url, headers={'api-key': like.user.key})
+    assert response.status_code == 200
+
+
+async def test_api_deleting_alien_like(
+    client: AsyncClient, db: AsyncSession, user_api_key: dict
+):
+    like = await LikeFactory.create()
+    url = f'{settings.API_PREFIX_V1}/twits/{like.twit_id}/likes/'
+    response = await client.delete(url, headers=user_api_key)
+    assert response.status_code == 400
+    assert response.json() == {"detail": "like not found"}

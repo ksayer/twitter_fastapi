@@ -1,5 +1,6 @@
-from typing import Generic, Type, TypeVar
+from typing import Any, Generic, Type, TypeVar
 
+from fastapi import HTTPException
 from fastapi.encoders import jsonable_encoder
 from pydantic import BaseModel
 from sqlalchemy import select
@@ -15,10 +16,15 @@ class CRUDBase(Generic[ModelType, CreateSchemaType]):
     def __init__(self, model: Type[ModelType]):
         self.model = model
 
-    async def get(self, db: AsyncSession, **kwargs) -> ModelType | None:
+    async def get(self, db: AsyncSession, **kwargs) -> Any:
         query = select(self.model).filter_by(**kwargs)  # type: ignore
         result = await db.execute(query)
-        return result.scalars().first()
+        result = result.scalars().first()
+        if not result:
+            raise HTTPException(
+                status_code=400, detail=f'{self.model.__tablename__} not found'
+            )
+        return result
 
     async def get_multi(
         self, db: AsyncSession, *, skip: int = 0, limit: int = 100, **kwargs
