@@ -1,12 +1,27 @@
 from typing import TYPE_CHECKING, List
 
-from sqlalchemy import String, UniqueConstraint
+from sqlalchemy import String, UniqueConstraint, ForeignKey
 from sqlalchemy.orm import Mapped, mapped_column, relationship  # type:ignore
 
 from src.db.base_class import Base
 
 if TYPE_CHECKING:
     from .twit import Twit
+
+
+class Follow(Base):
+    follower_id: Mapped[int] = mapped_column(
+        ForeignKey('user.id'), nullable=False, index=True, primary_key=True
+    )
+    following_id: Mapped[int] = mapped_column(
+        ForeignKey('user.id'), nullable=False, index=True, primary_key=True
+    )
+    follower: Mapped['User'] = relationship(
+        foreign_keys=[follower_id],
+    )
+    following: Mapped['User'] = relationship(
+        foreign_keys=[following_id],
+    )
 
 
 class User(Base):
@@ -18,6 +33,24 @@ class User(Base):
     twits: Mapped[List['Twit']] = relationship(
         back_populates='user', cascade='all, delete-orphan'
     )  # type: ignore
+    followers = relationship(
+        'User',
+        secondary='follow',
+        primaryjoin='user.c.id == follow.c.following_id',
+        secondaryjoin='user.c.id == follow.c.follower_id',
+        lazy='joined',
+        join_depth=2,
+        back_populates='followings'
+    )
+    followings = relationship(
+        'User',
+        secondary='follow',
+        primaryjoin='user.c.id == follow.c.follower_id',
+        secondaryjoin='user.c.id == follow.c.following_id',
+        lazy='joined',
+        join_depth=2,
+        back_populates='followers'
+    )
 
     def repr(self) -> str:
         return 'User ID={user_id}, {name}'.format(user_id=self.id, name=self.name)
