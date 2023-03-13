@@ -1,3 +1,4 @@
+from .follow import follow  # noqa
 from .like import like  # noqa
 from .media import media  # noqa
 from .twit import twit  # noqa

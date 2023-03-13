@@ -16,5 +16,17 @@ class CRUDUser(CRUDBase[User, schemas.UserBase]):
             raise HTTPException(status_code=404, detail='user not found')
         return user
 
+    async def get_multi(
+        self, db: AsyncSession, *, skip: int = 0, limit: int = 100, **kwargs
+    ):
+        query = (
+            select(self.model)
+            .filter_by(**kwargs)  # type: ignore
+            .offset(skip)
+            .limit(limit)
+        )
+        objects = await db.execute(query)
+        return objects.scalars().unique().all()
+
 
 user = CRUDUser(User)

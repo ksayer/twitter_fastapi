@@ -10,6 +10,6 @@ async def init_db() -> None:
     async with async_session() as sesion:
         async with sesion.begin():
             users = await sesion.execute(select(User))
-            if not users.scalars().all():
+            if not users.scalars().unique().all():
                 sesion.add_all([user, user2])
                 await sesion.commit()

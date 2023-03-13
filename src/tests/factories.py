@@ -4,6 +4,7 @@ import factory
 from factory import fuzzy
 
 from src.models import Like, Media, Twit, User
+from src.models.user import Follow
 from src.tests.conftest import session
 
 
@@ -74,6 +75,28 @@ class LikeFactory(factory.alchemy.SQLAlchemyModelFactory):
             user = await kwargs.pop('user')
             twit = await kwargs.pop('twit')
             obj = model_class(user=user, twit=twit, *args, **kwargs)
+            db.add(obj)
+            await db.commit()
+            return obj
+
+
+class FollowFactory(factory.alchemy.SQLAlchemyModelFactory):
+    class Meta:
+        model = Follow
+
+    follower: factory.SubFactory = factory.SubFactory(UserFactory)
+    following: factory.SubFactory = factory.SubFactory(UserFactory)
+
+    @classmethod
+    async def _create(cls, model_class, *args, **kwargs):
+        """
+        Override the default _create method to use an async session.
+        You must pass AsyncSession object in create method
+        """
+        async with session() as db:
+            follower = await kwargs.pop('follower')
+            following = await kwargs.pop('following')
+            obj = model_class(follower=follower, following=following, *args, **kwargs)
             db.add(obj)
             await db.commit()
             return obj

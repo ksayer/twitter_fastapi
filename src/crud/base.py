@@ -26,6 +26,12 @@ class CRUDBase(Generic[ModelType, CreateSchemaType]):
             )
         return result
 
+    async def get_or_none(self, db: AsyncSession, **kwargs) -> Any:
+        query = select(self.model).filter_by(**kwargs)  # type: ignore
+        result = await db.execute(query)
+        result = result.scalars().first()
+        return result
+
     async def get_multi(
         self, db: AsyncSession, *, skip: int = 0, limit: int = 100, **kwargs
     ):
@@ -42,4 +48,5 @@ class CRUDBase(Generic[ModelType, CreateSchemaType]):
         obj_in_data = jsonable_encoder(obj_in)
         db_obj = self.model(**obj_in_data)
         db.add(db_obj)
+        await db.commit()
         return db_obj
