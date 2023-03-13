@@ -2,7 +2,7 @@ from fastapi import HTTPException
 from sqlalchemy import select
 from sqlalchemy.ext.asyncio import AsyncSession
 
-from src import schemas, crud
+from src import schemas
 from src.crud.base import CRUDBase
 from src.models.user import User
 

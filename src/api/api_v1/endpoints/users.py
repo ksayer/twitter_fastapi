@@ -3,7 +3,7 @@ from typing import Dict, List
 from fastapi import APIRouter, Depends
 from sqlalchemy.ext.asyncio import AsyncSession
 
-from src import crud, schemas, models
+from src import crud, models, schemas
 from src.api import deps
 
 router = APIRouter()

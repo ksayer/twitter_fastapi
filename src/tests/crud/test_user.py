@@ -3,7 +3,7 @@ from fastapi import HTTPException
 from sqlalchemy.ext.asyncio import AsyncSession
 
 from src import crud
-from src.tests.factories import UserFactory, FollowFactory
+from src.tests.factories import FollowFactory, UserFactory
 
 pytestmark = pytest.mark.asyncio
 

@@ -1,6 +1,6 @@
 from typing import TYPE_CHECKING, List
 
-from sqlalchemy import String, UniqueConstraint, ForeignKey
+from sqlalchemy import ForeignKey, String, UniqueConstraint
 from sqlalchemy.orm import Mapped, mapped_column, relationship  # type:ignore
 
 from src.db.base_class import Base
@@ -17,9 +17,11 @@ class Follow(Base):
         ForeignKey('user.id'), nullable=False, index=True, primary_key=True
     )
     follower: Mapped['User'] = relationship(
+        argument=None,
         foreign_keys=[follower_id],
     )
     following: Mapped['User'] = relationship(
+        argument=None,
         foreign_keys=[following_id],
     )
 
@@ -40,7 +42,8 @@ class User(Base):
         secondaryjoin='user.c.id == follow.c.follower_id',
         lazy='joined',
         join_depth=2,
-        back_populates='followings'
+        back_populates='followings',
+        overlaps="follower, following",  # type: ignore
     )
     followings = relationship(
         'User',
@@ -49,7 +52,8 @@ class User(Base):
         secondaryjoin='user.c.id == follow.c.following_id',
         lazy='joined',
         join_depth=2,
-        back_populates='followers'
+        back_populates='followers',
+        overlaps="following, follower",  # type: ignore
     )
 
     def repr(self) -> str:

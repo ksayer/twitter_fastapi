@@ -84,8 +84,8 @@ class FollowFactory(factory.alchemy.SQLAlchemyModelFactory):
     class Meta:
         model = Follow
 
-    follower = factory.SubFactory(UserFactory)
-    following = factory.SubFactory(UserFactory)
+    follower: factory.SubFactory = factory.SubFactory(UserFactory)
+    following: factory.SubFactory = factory.SubFactory(UserFactory)
 
     @classmethod
     async def _create(cls, model_class, *args, **kwargs):

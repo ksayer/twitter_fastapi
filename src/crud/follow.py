@@ -6,7 +6,6 @@ from src.models.user import Follow
 
 
 class CRUDFollow(CRUDBase[Follow, CreateSchemaType]):
-
     async def follow_user(self, db, *, following_user_id: int, follower_user_id: int):
         check_follow = await self.get_or_none(
             db, follower_id=follower_user_id, following_id=following_user_id
@@ -16,7 +15,7 @@ class CRUDFollow(CRUDBase[Follow, CreateSchemaType]):
         follow_obj = schemas.FollowIn(
             follower_id=follower_user_id, following_id=following_user_id
         )
-        await self.create(db, obj_in=follow_obj)
+        await self.create(db, obj_in=follow_obj)  # type: ignore
         return True
 
     async def delete_follow(self, db, *, following_user_id: int, follower_user_id: int):
