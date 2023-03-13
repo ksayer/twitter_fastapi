@@ -23,7 +23,7 @@ class Twit(Base):
     media: AssociationProxy[list['Media']] = association_proxy(  # type: ignore
         'mediatwit',
         'media',
-        creator=lambda media: MediaTwit(media=media),
+        creator=lambda media: MediaTwit(media=media)
     )
     like: Mapped[list['Like']] = relationship(  # type: ignore
         back_populates='twit', cascade='all, delete-orphan', lazy='selectin'

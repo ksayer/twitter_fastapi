@@ -1,4 +1,4 @@
 from .follow import FollowIn  # noqa
 from .media import MediaOut  # noqa
-from .twit import TwitIn, TwitOut  # noqa
-from .user import UserBase, UserOut  # noqa
+from .twit import TwitIn, TwitOut, TwitOutFeed  # noqa
+from .user import UserIn, UserOut  # noqa
