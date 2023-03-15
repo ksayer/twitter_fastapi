@@ -30,11 +30,6 @@ class Twit(Base):
         'like', 'user', creator=lambda user: Like(user=user)
     )
 
-    def repr(self) -> str:
-        return 'Twit ID={twit_id} of {user}'.format(
-            twit_id=self.id, user=self.user.name
-        )
-
     def to_json(self) -> dict[str, Any]:
         return {c.name: getattr(self, c.name) for c in self.__table__.columns}
 

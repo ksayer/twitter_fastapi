@@ -55,6 +55,3 @@ class User(Base):
         back_populates='followers',
         overlaps="following, follower",  # type: ignore
     )
-
-    def repr(self) -> str:
-        return 'User ID={user_id}, {name}'.format(user_id=self.id, name=self.name)

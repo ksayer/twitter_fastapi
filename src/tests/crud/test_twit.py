@@ -74,6 +74,8 @@ async def test_crud_setting_like(db: AsyncSession):
     twit = await crud.twit.get(db, tweet_id=twit.tweet_id)
     assert len(twit.liked_users) == 1
     assert twit.liked_users[0].id == user.id
+    with pytest.raises(HTTPException):
+        await crud.twit.set_like(db, user_id=user.id, twit_id=twit.tweet_id)
 
 
 async def test_crud_deleting_like(db: AsyncSession):
@@ -97,3 +99,8 @@ async def test_crud_get_users_twit(db: AsyncSession, users_twits: tuple):
     twits_user_1 = await crud.twit.get_users_twits(db, user_id=user_1.id)
     assert len(twits_user_2) == 2
     assert len(twits_user_1) == 1
+
+
+async def test_crud_get_media_exception(db: AsyncSession):
+    with pytest.raises(HTTPException):
+        await crud.twit.get_media(db, [3, 5])
