@@ -4,7 +4,7 @@
 name = "aiofiles"
 version = "23.1.0"
 description = "File support for asyncio."
-category = "dev"
+category = "main"
 optional = false
 python-versions = ">=3.7,<4.0"
 files = [
@@ -1126,4 +1126,4 @@ standard = ["colorama (>=0.4)", "httptools (>=0.5.0)", "python-dotenv (>=0.13)",
 [metadata]
 lock-version = "2.0"
 python-versions = "^3.11"
-content-hash = "b73c41d4eca0f12ef2905ba1d86f0959324cd7c5814579de25b1d974bbfdbaec"
+content-hash = "bd6c89c142fd300f324d16dcb981697739067ee67b0546099c62d1c05ea89372"
