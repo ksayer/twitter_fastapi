@@ -51,3 +51,12 @@ async def delete_like(
 ):
     await crud.twit.delete_like(db, twit_id=id, user_id=current_user.id)
     return {'result': True}
+
+
+@router.get('/', status_code=200)
+async def get_users_twits(
+    db: AsyncSession = Depends(deps.get_session),
+    current_user: models.User = Depends(deps.get_current_user),
+) -> dict[str, bool | list[schemas.TwitOutFeed]]:
+    twits = await crud.twit.get_users_twits(db, user_id=current_user.id)
+    return {"result": True, "tweets": twits}

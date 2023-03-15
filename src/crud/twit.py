@@ -4,10 +4,12 @@ from fastapi import HTTPException
 from fastapi.encoders import jsonable_encoder
 from sqlalchemy import select
 from sqlalchemy.ext.asyncio import AsyncSession
+from sqlalchemy.orm import subqueryload
 
 from src import crud, schemas
 from src.crud.base import CRUDBase
-from src.models import Media, Twit
+from src.models import Media, MediaTwit, Twit, User
+from src.models.user import Follow
 
 
 class CRUDTwit(CRUDBase[Twit, schemas.TwitIn]):
@@ -56,6 +58,20 @@ class CRUDTwit(CRUDBase[Twit, schemas.TwitIn]):
         deleting_like = await crud.like.get(db, twit_id=twit_id, user_id=user_id)
         await db.delete(deleting_like)
         await db.commit()
+
+    async def get_users_twits(self, db: AsyncSession, user_id: int):
+        query = (
+            select(Twit)
+            .options(  # type: ignore
+                subqueryload(Twit.mediatwit).subqueryload(MediaTwit.media)
+            )
+            .join(User, onclause=Twit.user_id == User.id)
+            .join(Follow, onclause=Follow.following_id == User.id)
+            .filter(Follow.follower_id == user_id)
+        )
+        twits = await db.execute(query)
+        twits = twits.scalars().unique().all()
+        return twits
 
 
 twit = CRUDTwit(Twit)

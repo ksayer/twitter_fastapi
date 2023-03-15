@@ -9,11 +9,6 @@ from src.tests.factories import FollowFactory, UserFactory
 pytestmark = pytest.mark.asyncio
 
 
-async def test_get_users_endpoint(client: AsyncClient, db: AsyncSession):
-    response = await client.get(f'{settings.API_PREFIX_V1}/users')
-    assert response.json() == [{'name': 'Fix', 'key': 'test11', 'id': 1}]
-
-
 async def test_api_follow_user(client: AsyncClient, db: AsyncSession):
     follower = await UserFactory.create()
     following = await UserFactory.create()

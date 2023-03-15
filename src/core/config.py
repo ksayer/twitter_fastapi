@@ -16,6 +16,7 @@ class Settings(BaseSettings):
     TEST_SQLALCHEMY_DATABASE_URI: PostgresDsn | None = None
     API_PREFIX_V1: str
     MEDIA_ROOT: str
+    MEDIA_URL: str
 
     @validator("MEDIA_ROOT", pre=True)
     def assemble_media_root(cls, value: str | None):
