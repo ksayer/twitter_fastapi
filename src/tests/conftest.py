@@ -10,6 +10,7 @@ from httpx import AsyncClient
 from sqlalchemy.ext.asyncio import AsyncConnection, AsyncSession, create_async_engine
 from sqlalchemy.orm import sessionmaker
 
+from src import crud
 from src.api.deps import get_session
 from src.core.config import settings
 from src.db.base import Base
@@ -129,6 +130,40 @@ async def users_twits():
     await FollowFactory.create(follower=user_1, following=user_2)
     await FollowFactory.create(follower=user_3, following=user_2)
     return user_1, user_2
+
+
+@pytest_asyncio.fixture
+async def user_info(db):
+    from src.tests.factories import UserFactory
+
+    user = await UserFactory.create()
+    follower = await UserFactory.create()
+    following = await UserFactory.create()
+    following_2 = await UserFactory.create()
+    await crud.follow.follow_user(
+        db, follower_user_id=follower.id, following_user_id=user.id
+    )
+    await crud.follow.follow_user(
+        db, follower_user_id=user.id, following_user_id=following.id
+    )
+    await crud.follow.follow_user(
+        db, follower_user_id=user.id, following_user_id=following_2.id
+    )
+    json_response = {
+        'result': True,
+        'user': {
+            'name': user.name,
+            'id': user.id,
+            'followers': [
+                {'name': follower.name, 'id': follower.id},
+            ],
+            'following': [
+                {'name': following.name, 'id': following.id},
+                {'name': following_2.name, 'id': following_2.id},
+            ],
+        },
+    }
+    return user, follower, following, following_2, json_response
 
 
 app.dependency_overrides[get_session] = override_get_db

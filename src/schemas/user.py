@@ -1,4 +1,4 @@
-from pydantic import BaseModel, Field
+from pydantic import BaseModel
 
 
 class UserBase(BaseModel):
@@ -17,7 +17,7 @@ class UserOut(UserBase):
 
 
 class UserOutFollowers(UserBase):
-    id: int | None = Field(alias='user_id')
+    id: int | None
     followers: list[UserOut] | None
     following: list[UserOut] | None
 
