@@ -3,7 +3,7 @@ from fastapi import HTTPException
 from sqlalchemy.ext.asyncio import AsyncSession
 
 from src import crud
-from src.tests.factories import LikeFactory, TwitFactory, UserFactory
+from src.tests.factories import FollowFactory, LikeFactory, TwitFactory, UserFactory
 
 pytestmark = pytest.mark.asyncio
 
@@ -88,3 +88,20 @@ async def test_crud_deleting_alien_like(db: AsyncSession):
     user = await UserFactory.create()
     with pytest.raises(HTTPException):
         await crud.twit.delete_like(db, twit_id=like.twit_id, user_id=user.id)
+
+
+async def test_crud_get_users_twit(db: AsyncSession):
+    user_1 = await UserFactory.create()
+    user_2 = await UserFactory.create()
+    user_3 = await UserFactory.create()
+    await TwitFactory.create(user=user_1)
+    await TwitFactory.create(user=user_1)
+    await TwitFactory.create(user=user_2)
+    await TwitFactory.create(user=user_3)
+    await FollowFactory.create(follower=user_2, following=user_1)
+    await FollowFactory.create(follower=user_1, following=user_2)
+    await FollowFactory.create(follower=user_3, following=user_2)
+    twits_user_2 = await crud.twit.get_users_twits(db, user_id=user_2.id)
+    twits_user_1 = await crud.twit.get_users_twits(db, user_id=user_1.id)
+    assert len(twits_user_2) == 2
+    assert len(twits_user_1) == 1

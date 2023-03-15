@@ -44,7 +44,8 @@ class TwitFactory(factory.alchemy.SQLAlchemyModelFactory):
         You must pass AsyncSession object in create method
         """
         async with session() as db:
-            user = await kwargs.pop('user')
+            user = kwargs.pop('user')
+            user = user if isinstance(user, User) else await user
             obj = model_class(user=user, *args, **kwargs)
             db.add(obj)
             await db.commit()
@@ -94,8 +95,10 @@ class FollowFactory(factory.alchemy.SQLAlchemyModelFactory):
         You must pass AsyncSession object in create method
         """
         async with session() as db:
-            follower = await kwargs.pop('follower')
-            following = await kwargs.pop('following')
+            follower = kwargs.pop('follower')
+            follower = follower if isinstance(follower, User) else await follower
+            following = kwargs.pop('following')
+            following = following if isinstance(following, User) else await following
             obj = model_class(follower=follower, following=following, *args, **kwargs)
             db.add(obj)
             await db.commit()

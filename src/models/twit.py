@@ -21,9 +21,7 @@ class Twit(Base):
         back_populates='twit', cascade="all, delete-orphan", lazy='selectin'
     )
     media: AssociationProxy[list['Media']] = association_proxy(  # type: ignore
-        'mediatwit',
-        'media',
-        creator=lambda media: MediaTwit(media=media)
+        'mediatwit', 'media', creator=lambda media: MediaTwit(media=media)
     )
     like: Mapped[list['Like']] = relationship(  # type: ignore
         back_populates='twit', cascade='all, delete-orphan', lazy='selectin'

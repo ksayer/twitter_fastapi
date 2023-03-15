@@ -8,13 +8,13 @@ from sqlalchemy.orm import subqueryload
 
 from src import crud, schemas
 from src.crud.base import CRUDBase
-from src.models import Media, Twit, MediaTwit, User
+from src.models import Media, MediaTwit, Twit, User
 from src.models.user import Follow
 
 
 class CRUDTwit(CRUDBase[Twit, schemas.TwitIn]):
     async def create_with_user(
-            self, db: AsyncSession, *, obj_in: schemas.TwitIn, user_id: int
+        self, db: AsyncSession, *, obj_in: schemas.TwitIn, user_id: int
     ):
         obj_in_data = jsonable_encoder(obj_in)
         media_ids = obj_in_data.pop('tweet_media_ids', [])
@@ -60,11 +60,15 @@ class CRUDTwit(CRUDBase[Twit, schemas.TwitIn]):
         await db.commit()
 
     async def get_users_twits(self, db: AsyncSession, user_id: int):
-        query = select(Twit) \
-            .options(subqueryload(Twit.mediatwit).subqueryload(MediaTwit.media)) \
-            .join(User, onclause=Twit.user_id == User.id) \
-            .join(Follow, onclause=Follow.following_id == User.id) \
+        query = (
+            select(Twit)
+            .options(  # type: ignore
+                subqueryload(Twit.mediatwit).subqueryload(MediaTwit.media)
+            )
+            .join(User, onclause=Twit.user_id == User.id)
+            .join(Follow, onclause=Follow.following_id == User.id)
             .filter(Follow.follower_id == user_id)
+        )
         twits = await db.execute(query)
         twits = twits.scalars().unique().all()
         return twits
