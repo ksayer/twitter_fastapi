@@ -42,10 +42,10 @@ class User(Base):
         secondaryjoin='user.c.id == follow.c.follower_id',
         lazy='joined',
         join_depth=2,
-        back_populates='followings',
+        back_populates='following',
         overlaps="follower, following",  # type: ignore
     )
-    followings = relationship(
+    following = relationship(
         'User',
         secondary='follow',
         primaryjoin='user.c.id == follow.c.follower_id',

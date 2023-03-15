@@ -35,7 +35,7 @@ async def test_crud_follow_user(db: AsyncSession):
     )
     follower = await crud.user.get(db, id=follower.id)
     target_user = await crud.user.get(db, id=target_user.id)
-    assert follower.followings[0] == target_user
+    assert follower.following[0] == target_user
     assert len(follower.followers) == 0
     assert len(target_user.followers) == 1
     with pytest.raises(HTTPException):

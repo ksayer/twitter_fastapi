@@ -16,7 +16,7 @@ async def test_api_follow_user(client: AsyncClient, db: AsyncSession):
     response = await client.post(url, headers={'api-key': follower.key})
     assert response.status_code == 200
     follower = await crud.user.get(db, id=follower.id)
-    assert follower.followings[0].id == following.id
+    assert follower.following[0].id == following.id
     response = await client.post(url, headers={'api-key': follower.key})
     assert response.status_code == 400
 
