@@ -73,8 +73,10 @@ class LikeFactory(factory.alchemy.SQLAlchemyModelFactory):
         You must pass AsyncSession object in create method
         """
         async with session() as db:
-            user = await kwargs.pop('user')
-            twit = await kwargs.pop('twit')
+            user = kwargs.pop('user')
+            user = user if isinstance(user, User) else await user
+            twit = kwargs.pop('twit')
+            twit = twit if isinstance(twit, Twit) else await twit
             obj = model_class(user=user, twit=twit, *args, **kwargs)
             db.add(obj)
             await db.commit()

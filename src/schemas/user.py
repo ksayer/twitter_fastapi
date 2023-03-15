@@ -12,14 +12,14 @@ class UserIn(UserBase):
     key: str
 
 
-class FollowerOut(UserBase):
+class UserOut(UserBase):
     id: int | None
 
 
-class UserOut(UserBase):
+class UserOutFollowers(UserBase):
     id: int | None = Field(alias='user_id')
-    followers: list[FollowerOut] | None
-    following: list[FollowerOut] | None
+    followers: list[UserOut] | None
+    following: list[UserOut] | None
 
     class Config:
         allow_population_by_field_name = True

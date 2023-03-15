@@ -7,7 +7,9 @@ from src.api import deps
 router = APIRouter()
 
 
-@router.get("/me", status_code=200, response_model=dict[str, bool | schemas.UserOut])
+@router.get(
+    "/me", status_code=200, response_model=dict[str, bool | schemas.UserOutFollowers]
+)
 async def get_users_info(
     *,
     db: AsyncSession = Depends(deps.get_session),
