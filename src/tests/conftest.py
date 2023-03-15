@@ -114,4 +114,21 @@ async def twit_with_media():
     return obj_in
 
 
+@pytest_asyncio.fixture
+async def users_twits():
+    from src.tests.factories import FollowFactory, TwitFactory, UserFactory
+
+    user_1 = await UserFactory.create()
+    user_2 = await UserFactory.create()
+    user_3 = await UserFactory.create()
+    await TwitFactory.create(user=user_1)
+    await TwitFactory.create(user=user_1)
+    await TwitFactory.create(user=user_2)
+    await TwitFactory.create(user=user_3)
+    await FollowFactory.create(follower=user_2, following=user_1)
+    await FollowFactory.create(follower=user_1, following=user_2)
+    await FollowFactory.create(follower=user_3, following=user_2)
+    return user_1, user_2
+
+
 app.dependency_overrides[get_session] = override_get_db

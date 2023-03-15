@@ -4,7 +4,7 @@ from sqlalchemy.ext.asyncio import AsyncSession
 
 from src import crud
 from src.core.config import settings
-from src.tests.factories import LikeFactory, TwitFactory
+from src.tests.factories import FollowFactory, LikeFactory, TwitFactory, UserFactory
 
 pytestmark = pytest.mark.asyncio
 
@@ -81,3 +81,44 @@ async def test_api_deleting_alien_like(
     response = await client.delete(url, headers=user_api_key)
     assert response.status_code == 400
     assert response.json() == {"detail": "like not found"}
+
+
+async def test_get_users_twits(client: AsyncClient, db: AsyncSession, twit_with_media):
+    user_1 = await UserFactory.create()
+    user_2 = await UserFactory.create()
+    user_3 = await UserFactory.create()
+    await TwitFactory.create(user=user_1)
+    twit_user_2 = await TwitFactory.create(user=user_2)
+    twit_user_3 = await crud.twit.create_with_user(
+        db, obj_in=twit_with_media, user_id=user_3.id
+    )
+    await FollowFactory.create(follower=user_1, following=user_2)
+    await FollowFactory.create(follower=user_1, following=user_3)
+    await LikeFactory.create(user=user_1, twit=twit_user_2)
+    await LikeFactory.create(user=user_2, twit=twit_user_2)
+    url = f'{settings.API_PREFIX_V1}/twits/'
+    response = await client.get(url, headers={'api-key': user_1.key})
+    assert response.status_code == 200
+    json_response = {
+        'result': True,
+        'tweets': [
+            {
+                'id': twit_user_2.tweet_id,
+                'content': twit_user_2.tweet_data,
+                'attachments': [],
+                'author': {'name': twit_user_2.user.name, 'id': twit_user_2.user.id},
+                'likes': [
+                    {'name': user_1.name, 'id': user_1.id},
+                    {'name': user_2.name, 'id': user_2.id},
+                ],
+            },
+            {
+                'id': 4,
+                'content': twit_user_3.tweet_data,
+                'attachments': [f'{settings.MEDIA_URL}{m}' for m in twit_user_3.media],
+                'author': {'name': user_3.name, 'id': user_3.id},
+                'likes': [],
+            },
+        ],
+    }
+    assert response.json() == json_response
