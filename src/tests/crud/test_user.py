@@ -27,6 +27,11 @@ async def test_get_user_by_key(db: AsyncSession):
     assert user.key == fake_user.key
 
 
+async def test_get_user_by_key_exception(db: AsyncSession):
+    with pytest.raises(HTTPException):
+        await crud.user.get_by_key(db, key='fake-key')
+
+
 async def test_crud_follow_user(db: AsyncSession):
     follower = await UserFactory.create()
     target_user = await UserFactory.create()
