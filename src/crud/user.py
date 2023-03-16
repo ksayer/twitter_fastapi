@@ -1,8 +1,8 @@
-from fastapi import HTTPException
 from sqlalchemy import select
 from sqlalchemy.ext.asyncio import AsyncSession
 
 from src import schemas
+from src.core.exceptions import ValidationError
 from src.crud.base import CRUDBase
 from src.models.user import User
 
@@ -13,7 +13,7 @@ class CRUDUser(CRUDBase[User, schemas.UserIn]):
         user = await db.execute(query)
         user = user.scalars().first()
         if not user:
-            raise HTTPException(status_code=404, detail='user not found')
+            raise ValidationError(self.model.__tablename__)
         return user
 
     async def get_multi(

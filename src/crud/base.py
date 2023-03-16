@@ -1,11 +1,11 @@
 from typing import Any, Generic, Type, TypeVar
 
-from fastapi import HTTPException
 from fastapi.encoders import jsonable_encoder
 from pydantic import BaseModel
 from sqlalchemy import select
 from sqlalchemy.ext.asyncio import AsyncSession
 
+from src.core.exceptions import ValidationError
 from src.db.base_class import Base
 
 ModelType = TypeVar('ModelType', bound=Base)
@@ -21,9 +21,7 @@ class CRUDBase(Generic[ModelType, CreateSchemaType]):
         result = await db.execute(query)
         result = result.scalars().first()
         if not result:
-            raise HTTPException(
-                status_code=400, detail=f'{self.model.__tablename__} not found'
-            )
+            raise ValidationError(model_name=self.model.__tablename__)
         return result
 
     async def get_or_none(self, db: AsyncSession, **kwargs) -> Any:

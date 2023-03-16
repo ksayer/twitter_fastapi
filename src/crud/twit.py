@@ -1,12 +1,12 @@
 from typing import Any
 
-from fastapi import HTTPException
 from fastapi.encoders import jsonable_encoder
 from sqlalchemy import select
 from sqlalchemy.ext.asyncio import AsyncSession
 from sqlalchemy.orm import subqueryload
 
 from src import crud, schemas
+from src.core.exceptions import ValidationError
 from src.crud.base import CRUDBase
 from src.models import Media, MediaTwit, Twit, User
 from src.models.user import Follow
@@ -30,7 +30,7 @@ class CRUDTwit(CRUDBase[Twit, schemas.TwitIn]):
         result = await db.execute(query)
         media_list = result.scalars().all()
         if len(media_list) != len(ids):
-            raise HTTPException(status_code=404, detail="media not found")
+            raise ValidationError(self.model.__tablename__)
         return media_list
 
     async def delete_users_tweet(self, db: AsyncSession, twit_id: int, user_id: int):
@@ -40,7 +40,7 @@ class CRUDTwit(CRUDBase[Twit, schemas.TwitIn]):
         user_twit = await db.execute(query)
         user_twit = user_twit.scalars().first()
         if not user_twit:
-            raise HTTPException(status_code=404, detail="twit not found")
+            raise ValidationError(self.model.__tablename__)
         await db.delete(user_twit)
         await db.commit()
         return True
@@ -49,7 +49,7 @@ class CRUDTwit(CRUDBase[Twit, schemas.TwitIn]):
         twit: Any = await self.get(db, tweet_id=twit_id)
         user = await crud.user.get(db, id=user_id)
         if user in twit.liked_users:
-            raise HTTPException(status_code=400, detail='Like already set')
+            raise ValidationError(self.model.__tablename__)
         twit.liked_users.append(user)
         await db.commit()
         return twit

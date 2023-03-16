@@ -50,7 +50,7 @@ async def test_deleting_wrong_twit(
     response = await client.delete(url, headers=headers)
     twits = await crud.twit.get_multi(db)
     assert len(twits) == 1
-    assert response.status_code == 404
+    assert response.status_code == 400
 
 
 async def test_api_setting_like(
@@ -80,7 +80,6 @@ async def test_api_deleting_alien_like(
     url = f'{settings.API_PREFIX_V1}/twits/{like.twit_id}/likes/'
     response = await client.delete(url, headers=user_api_key)
     assert response.status_code == 400
-    assert response.json() == {"detail": "like not found"}
 
 
 async def test_get_users_twits(client: AsyncClient, db: AsyncSession, twit_with_media):

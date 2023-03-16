@@ -1,6 +1,5 @@
-from fastapi import HTTPException
-
 from src import schemas
+from src.core.exceptions import ValidationError
 from src.crud.base import CreateSchemaType, CRUDBase
 from src.models.user import Follow
 
@@ -11,7 +10,7 @@ class CRUDFollow(CRUDBase[Follow, CreateSchemaType]):
             db, follower_id=follower_user_id, following_id=following_user_id
         )
         if check_follow or following_user_id == follower_user_id:
-            raise HTTPException(status_code=400, detail='wrong target')
+            raise ValidationError(self.model.__tablename__)
         follow_obj = schemas.FollowIn(
             follower_id=follower_user_id, following_id=following_user_id
         )

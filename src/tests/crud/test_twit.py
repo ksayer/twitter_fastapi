@@ -1,8 +1,8 @@
 import pytest
-from fastapi import HTTPException
 from sqlalchemy.ext.asyncio import AsyncSession
 
 from src import crud
+from src.core.exceptions import ValidationError
 from src.tests.factories import LikeFactory, TwitFactory, UserFactory
 
 pytestmark = pytest.mark.asyncio
@@ -59,7 +59,7 @@ async def test_deleting_twit_with_wrong_user(db: AsyncSession, twit_with_media):
     )
     twits = await crud.twit.get_multi(db)
     assert len(twits) == 2
-    with pytest.raises(HTTPException):
+    with pytest.raises(ValidationError):
         await crud.twit.delete_users_tweet(
             db, twit_id=tweet.tweet_id, user_id=user.id + 1
         )
@@ -74,21 +74,21 @@ async def test_crud_setting_like(db: AsyncSession):
     twit = await crud.twit.get(db, tweet_id=twit.tweet_id)
     assert len(twit.liked_users) == 1
     assert twit.liked_users[0].id == user.id
-    with pytest.raises(HTTPException):
+    with pytest.raises(ValidationError):
         await crud.twit.set_like(db, user_id=user.id, twit_id=twit.tweet_id)
 
 
 async def test_crud_deleting_like(db: AsyncSession):
     like = await LikeFactory.create()
     await crud.twit.delete_like(db, twit_id=like.twit_id, user_id=like.user_id)
-    with pytest.raises(HTTPException):
+    with pytest.raises(ValidationError):
         await crud.like.get(db, twit_id=like.twit_id, user_id=like.user_id)
 
 
 async def test_crud_deleting_alien_like(db: AsyncSession):
     like = await LikeFactory.create()
     user = await UserFactory.create()
-    with pytest.raises(HTTPException):
+    with pytest.raises(ValidationError):
         await crud.twit.delete_like(db, twit_id=like.twit_id, user_id=user.id)
 
 
@@ -102,5 +102,5 @@ async def test_crud_get_users_twit(db: AsyncSession, users_twits: tuple):
 
 
 async def test_crud_get_media_exception(db: AsyncSession):
-    with pytest.raises(HTTPException):
+    with pytest.raises(ValidationError):
         await crud.twit.get_media(db, [3, 5])
