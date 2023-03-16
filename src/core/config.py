@@ -17,6 +17,7 @@ class Settings(BaseSettings):
     API_PREFIX_V1: str
     MEDIA_ROOT: str
     MEDIA_URL: str
+    DEBUG: bool = False
 
     @validator("MEDIA_ROOT", pre=True)
     def assemble_media_root(cls, value: str | None):
