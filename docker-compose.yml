@@ -12,7 +12,7 @@ services:
       db:
         condition: service_healthy
     volumes:
-      - ${MEDIA_ROOT_HOST:-./src/}:/app/src/media/
+      - ${MEDIA_ROOT_HOST:-./src/media/}:/app/src/media/
     restart: unless-stopped
     env_file:
       - .env
