@@ -13,10 +13,13 @@ CreateSchemaType = TypeVar('CreateSchemaType', bound=BaseModel)
 
 
 class CRUDBase(Generic[ModelType, CreateSchemaType]):
+    """Base model for CRUD operations with database"""
+
     def __init__(self, model: Type[ModelType]):
         self.model = model
 
     async def get(self, db: AsyncSession, **kwargs) -> Any:
+        """Get first object with given parameters (raise error if not found)"""
         query = select(self.model).filter_by(**kwargs)  # type: ignore
         result = await db.execute(query)
         result = result.scalars().first()
@@ -25,6 +28,7 @@ class CRUDBase(Generic[ModelType, CreateSchemaType]):
         return result
 
     async def get_or_none(self, db: AsyncSession, **kwargs) -> Any:
+        """Get first object with given parameters or None"""
         query = select(self.model).filter_by(**kwargs)  # type: ignore
         result = await db.execute(query)
         result = result.scalars().first()
@@ -33,6 +37,7 @@ class CRUDBase(Generic[ModelType, CreateSchemaType]):
     async def get_multi(
         self, db: AsyncSession, *, skip: int = 0, limit: int = 100, **kwargs
     ):
+        """Get all objects of given model"""
         query = (
             select(self.model)
             .filter_by(**kwargs)  # type: ignore
@@ -40,9 +45,10 @@ class CRUDBase(Generic[ModelType, CreateSchemaType]):
             .limit(limit)
         )
         objects = await db.execute(query)
-        return objects.scalars().all()
+        return objects.scalars().unique().all()
 
     async def create(self, db: AsyncSession, *, obj_in: CreateSchemaType) -> ModelType:
+        """Create object in database"""
         obj_in_data = jsonable_encoder(obj_in)
         db_obj = self.model(**obj_in_data)
         db.add(db_obj)

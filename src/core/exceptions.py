@@ -12,10 +12,12 @@ class ValidationError(Exception):
 def register_exception_handlers(app) -> None:
     @app.exception_handler(ValidationError)
     async def validation_exception_handler(request, exc) -> JSONResponse:
+        """rebuild custom exception to create new message"""
         return JSONResponse(status_code=exc.status_code, content=exc.content)
 
     @app.exception_handler(RequestValidationError)
     async def pydantic_validation_exception_handler(request, exc) -> JSONResponse:
+        """rebuild default pydantic exception to create new message"""
         error = exc.errors()[0]
         message = f"{error['msg']}! location: {error['loc']}"
         return JSONResponse(status_code=400, content=create_exception_message(message))

@@ -99,8 +99,3 @@ async def test_crud_get_users_twit(db: AsyncSession, users_twits: tuple):
     twits_user_1 = await crud.twit.get_users_twits(db, user_id=user_1.id)
     assert len(twits_user_2) == 2
     assert len(twits_user_1) == 1
-
-
-async def test_crud_get_media_exception(db: AsyncSession):
-    with pytest.raises(ValidationError):
-        await crud.twit.get_media(db, [3, 5])

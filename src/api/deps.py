@@ -14,5 +14,5 @@ async def get_current_user(
     db: AsyncSession = Depends(get_session),
     api_key: str = Header(),
 ):
-    user = await crud.user.get_by_key(db, key=api_key)
+    user = await crud.user.get(db, key=api_key)
     return user

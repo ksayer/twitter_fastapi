@@ -15,7 +15,7 @@ async def get_my_info(
     db: AsyncSession = Depends(deps.get_session),
     current_user: models.User = Depends(deps.get_current_user),
 ) -> dict:
-    user = await crud.user.get_by_key(db, key=current_user.key)
+    user = await crud.user.get(db, key=current_user.key)
     return {'result': True, 'user': user}
 
 
@@ -23,9 +23,8 @@ async def get_my_info(
     '/{id}', status_code=200, response_model=dict[str, bool | schemas.UserOutFollowers]
 )
 async def get_users_info(
-    *,
-    db: AsyncSession = Depends(deps.get_session),
     id: int,
+    db: AsyncSession = Depends(deps.get_session),
     current_user: models.User = Depends(deps.get_current_user),
 ):
     user = await crud.user.get(db, id=id)
@@ -34,9 +33,8 @@ async def get_users_info(
 
 @router.post('/{id}/follow/')
 async def follow_user(
-    *,
-    db: AsyncSession = Depends(deps.get_session),
     id: int,
+    db: AsyncSession = Depends(deps.get_session),
     current_user: models.User = Depends(deps.get_current_user),
 ) -> dict:
     await crud.follow.follow_user(
@@ -47,9 +45,8 @@ async def follow_user(
 
 @router.delete('/{id}/follow/')
 async def delete_follow_user(
-    *,
-    db: AsyncSession = Depends(deps.get_session),
     id: int,
+    db: AsyncSession = Depends(deps.get_session),
     current_user: models.User = Depends(deps.get_current_user),
 ) -> dict:
     await crud.follow.delete_follow(
