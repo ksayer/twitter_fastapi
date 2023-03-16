@@ -15,7 +15,7 @@ class Settings(BaseSettings):
     SQLALCHEMY_DATABASE_URI: PostgresDsn | None = None
     TEST_SQLALCHEMY_DATABASE_URI: PostgresDsn | None = None
     API_PREFIX_V1: str
-    MEDIA_ROOT: str
+    MEDIA_ROOT: str = 'media/'
     MEDIA_URL: str
     DEBUG: bool = False
 
