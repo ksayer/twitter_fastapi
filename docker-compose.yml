@@ -16,7 +16,6 @@ services:
     restart: unless-stopped
     env_file:
       - .env
-    user: ${MY_UID}
   db:
     image: postgres:15.0-alpine
     env_file:
