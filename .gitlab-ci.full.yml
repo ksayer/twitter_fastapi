@@ -1,43 +1,36 @@
+version: '3.3'
+
 services:
-  - docker:dind
+  app:
+    build:
+      context: .
+      args:
+        - INSTALL_DEV=${INSTALL_DEV:-False}
+    ports:
+      - "8000:8000"
+    depends_on:
+      db:
+        condition: service_healthy
+    volumes:
+      - ${MEDIA_ROOT_HOST:-./src/}:/app/src/media/
+    restart: unless-stopped
+    env_file:
+      - .env
+    user: ${MY_UID}
+  db:
+    image: postgres:15.0-alpine
+    env_file:
+      - .env
+    expose:
+      - 5432
+    volumes:
+      - postgres:/var/lib/postgresql/data
+    restart: unless-stopped
+    healthcheck:
+      test: ["CMD", "pg_isready", "-U", "user", "-d", "postgres"]
+      interval: 10s
+      timeout: 5s
+      retries: 5
 
-before_script:
-  - export MY_UID=$(echo $UID)
-  - docker login -u "gitlab-ci-token" -p $CI_JOB_TOKEN $CI_REGISTRY
-  - printenv > .env
-
-stages:
-  - test
-  - build
-  - deploy
-
-tests:
-  stage: test
-  tags:
-    - twitter-prod
-  only:
-    - master
-  script:
-    - export INSTALL_DEV=True
-    - sh ./scripts/tests.sh
-
-build_image:
-  stage: build
-  tags:
-    - twitter-prod
-  only:
-    - master
-  script:
-    - docker-compose build
-    - docker-compose push
-
-deploy_image:
-  stage: deploy
-  tags:
-    - twitter-prod
-  only:
-    - master
-  script:
-    - docker-compose pull
-    - docker-compose down && docker-compose up -d
-    - docker system prune -f
+volumes:
+  postgres:
