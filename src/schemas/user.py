@@ -23,3 +23,11 @@ class UserOutFollowers(UserBase):
 
     class Config:
         allow_population_by_field_name = True
+
+
+class UserOutFollowersResponse(BaseModel):
+    result: bool = True
+    user: UserOutFollowers
+
+    class Config:
+        orm_mode = True

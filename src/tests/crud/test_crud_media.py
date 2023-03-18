@@ -12,7 +12,7 @@ from src.crud import media
 pytestmark = pytest.mark.asyncio
 
 
-async def test_create_media(db: AsyncSession, uploaded_file: UploadFile):
+async def test_crud_create_media(db: AsyncSession, uploaded_file: UploadFile):
     await media.create_and_save_file(db, file=uploaded_file)
     file_in_db = await media.get_multi(db, file=uploaded_file.filename)
     assert file_in_db

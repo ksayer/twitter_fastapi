@@ -18,7 +18,7 @@ async def test_api_follow_user(client: AsyncClient, db: AsyncSession):
     follower = await crud.user.get(db, id=follower.id)
     assert follower.following[0].id == following.id
     response = await client.post(url, headers={'api-key': follower.key})
-    assert response.status_code == 400
+    assert response.status_code == 422
 
 
 async def test_api_delete_follow_user(client: AsyncClient, db: AsyncSession):
@@ -27,7 +27,7 @@ async def test_api_delete_follow_user(client: AsyncClient, db: AsyncSession):
     response = await client.delete(url, headers={'api-key': follow.follower.key})
     assert response.status_code == 200
     response = await client.delete(url, headers={'api-key': follow.follower.key})
-    assert response.status_code == 400
+    assert response.status_code == 422
 
 
 async def test_get_user_info_empty(client: AsyncClient, db: AsyncSession):
@@ -61,3 +61,9 @@ async def test_any_user_info(client: AsyncClient, db: AsyncSession, user_info):
     response = await client.get(url, headers={'api-key': user.key})
     assert response.status_code == 200
     assert response.json() == json_response
+
+
+async def test_authorization(client: AsyncClient, db: AsyncSession):
+    url = f'{settings.API_PREFIX_V1}/users/1'
+    response = await client.get(url, headers={'api-key': 'asdasdasd'})
+    assert response.status_code == 403

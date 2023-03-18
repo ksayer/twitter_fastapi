@@ -18,6 +18,8 @@ class CRUDMedia(CRUDBase[Media, CreateSchemaType]):
         file: UploadFile,  # type: ignore
     ):
         """Create database row with given file name and create file in the disk"""
+        if not file.content_type.startswith('image/'):
+            raise ValidationError(message='invalid content type')
         filename = get_available_name(file.filename)
         path = settings.MEDIA_ROOT + filename
         content = file.file.read()

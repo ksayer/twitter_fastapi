@@ -99,7 +99,7 @@ def file_fixture(request):
 @pytest_asyncio.fixture
 async def uploaded_file():
     filename = 'asdfjhasdfk.jpeg'
-    yield UploadFile(filename, BytesIO(b'binary_data'))
+    yield UploadFile(filename, BytesIO(b'binary_data'), content_type='image/jpeg')
     os.remove(os.path.join(settings.MEDIA_ROOT, filename))
 
 

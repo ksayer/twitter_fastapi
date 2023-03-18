@@ -43,3 +43,8 @@ class TwitOutFeed(BaseModel):
     def validate_liked_users(cls, value):
         if value is not None:
             return [user for user in value]
+
+
+class TwitOutFeedListResponse(BaseModel):
+    result = True
+    tweets: list[TwitOutFeed] | None = None

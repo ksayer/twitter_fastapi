@@ -43,14 +43,15 @@ async def test_deleting_twit(client: AsyncClient, db: AsyncSession, user_api_key
 async def test_deleting_wrong_twit(
     client: AsyncClient, db: AsyncSession, user_api_key: dict
 ):
-    headers = {'api-key': 'test22222'}
+    user = await UserFactory.create()
+    headers = {'api-key': user.key}
     url = f'{settings.API_PREFIX_V1}/twits/1/'
     twits = await crud.twit.get_multi(db)
     assert len(twits) == 1
     response = await client.delete(url, headers=headers)
     twits = await crud.twit.get_multi(db)
     assert len(twits) == 1
-    assert response.status_code == 400
+    assert response.status_code == 422
 
 
 async def test_api_setting_like(
@@ -63,7 +64,7 @@ async def test_api_setting_like(
     twit = await crud.twit.get(db, tweet_id=twit.tweet_id)
     assert twit.liked_users[0].key == user_api_key['api-key']
     response = await client.post(url, headers=user_api_key)
-    assert response.status_code == 400
+    assert response.status_code == 422
 
 
 async def test_api_deleting_like(client: AsyncClient, db: AsyncSession):
@@ -79,7 +80,7 @@ async def test_api_deleting_alien_like(
     like = await LikeFactory.create()
     url = f'{settings.API_PREFIX_V1}/twits/{like.twit_id}/likes/'
     response = await client.delete(url, headers=user_api_key)
-    assert response.status_code == 400
+    assert response.status_code == 422
 
 
 async def test_get_users_twits(client: AsyncClient, db: AsyncSession, twit_with_media):
