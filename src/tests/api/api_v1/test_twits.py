@@ -87,7 +87,7 @@ async def test_get_users_twits(client: AsyncClient, db: AsyncSession, twit_with_
     user_1 = await UserFactory.create()
     user_2 = await UserFactory.create()
     user_3 = await UserFactory.create()
-    await TwitFactory.create(user=user_1)
+    twit_user_1 = await TwitFactory.create(user=user_1)
     twit_user_2 = await TwitFactory.create(user=user_2)
     twit_user_3 = await crud.twit.create_with_user(
         db, obj_in=twit_with_media, user_id=user_3.id
@@ -100,8 +100,14 @@ async def test_get_users_twits(client: AsyncClient, db: AsyncSession, twit_with_
     response = await client.get(url, headers={'api-key': user_1.key})
     assert response.status_code == 200
     json_response = {
-        'result': True,
         'tweets': [
+            {
+                'id': twit_user_3.tweet_id,
+                'content': twit_user_3.tweet_data,
+                'attachments': [f'{settings.MEDIA_URL}{m}' for m in twit_user_3.media],
+                'author': {'name': user_3.name, 'id': user_3.id},
+                'likes': [],
+            },
             {
                 'id': twit_user_2.tweet_id,
                 'content': twit_user_2.tweet_data,
@@ -113,12 +119,15 @@ async def test_get_users_twits(client: AsyncClient, db: AsyncSession, twit_with_
                 ],
             },
             {
-                'id': 4,
-                'content': twit_user_3.tweet_data,
-                'attachments': [f'{settings.MEDIA_URL}{m}' for m in twit_user_3.media],
-                'author': {'name': user_3.name, 'id': user_3.id},
+                'id': twit_user_1.tweet_id,
+                'content': twit_user_1.tweet_data,
+                'attachments': [],
+                'author': {'name': user_1.name, 'id': user_1.id},
                 'likes': [],
             },
         ],
+        'result': True,
     }
+    print(response.json())
+    print(json_response)
     assert response.json() == json_response

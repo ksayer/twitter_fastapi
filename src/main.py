@@ -1,9 +1,10 @@
+import os
+
 import pkg_resources
 import uvicorn
 from fastapi import FastAPI
 from starlette.responses import HTMLResponse
 from starlette.staticfiles import StaticFiles
-from starlette.templating import Jinja2Templates
 
 from src.api.api_v1.api import api_router
 from src.core.config import settings
@@ -11,12 +12,22 @@ from src.core.exceptions import register_exception_handlers
 from src.db.init_db import init_db
 
 app = FastAPI(title=settings.PROJECT_NAME, docs_url='/api/docs', redoc_url=None)
+app.include_router(api_router, prefix=settings.API_PREFIX_V1)
 register_exception_handlers(app)
 
-app.include_router(api_router, prefix=settings.API_PREFIX_V1)
-app.mount("/static", StaticFiles(directory="static"))
 
-templates = Jinja2Templates(directory="static")
+app.mount(
+    "/static",
+    StaticFiles(
+        directory=os.path.join(os.path.dirname(os.path.abspath(__file__)), "static")
+    ),
+)
+app.mount(
+    "/media",
+    StaticFiles(
+        directory=os.path.join(os.path.dirname(os.path.abspath(__file__)), "media")
+    ),
+)
 
 
 @app.get("/", include_in_schema=False)

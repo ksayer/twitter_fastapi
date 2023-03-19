@@ -1,7 +1,7 @@
 from typing import Any
 
 from fastapi.encoders import jsonable_encoder
-from sqlalchemy import or_, select
+from sqlalchemy import desc, or_, select
 from sqlalchemy.ext.asyncio import AsyncSession
 from sqlalchemy.orm import subqueryload
 
@@ -54,15 +54,24 @@ class CRUDTwit(CRUDBase[Twit, schemas.TwitIn]):
         return True
 
     async def get_users_twits(self, db: AsyncSession, user_id: int):
+        followers_subquery = (
+            select(Follow.following_id)
+            .where(Follow.follower_id == user_id)
+            .alias("followers")
+        )
         query = (
             select(Twit)
             .options(  # type: ignore
                 subqueryload(Twit.mediatwit).subqueryload(MediaTwit.media)
             )
             .join(User, onclause=Twit.user_id == User.id)
-            .join(Follow, onclause=Follow.following_id == User.id)
-            .where(or_(Follow.follower_id == user_id, Twit.user_id == user_id))
-        )
+            .where(
+                or_(
+                    Twit.user_id == user_id,
+                    Twit.user_id.in_(select(followers_subquery)),  # type: ignore
+                )
+            )
+        ).order_by(desc('tweet_id'))
         twits = await db.execute(query)
         twits = twits.scalars().unique().all()
         return twits
