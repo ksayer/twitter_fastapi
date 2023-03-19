@@ -22,6 +22,12 @@ app.mount(
         directory=os.path.join(os.path.dirname(os.path.abspath(__file__)), "static")
     ),
 )
+app.mount(
+    "/media",
+    StaticFiles(
+        directory=os.path.join(os.path.dirname(os.path.abspath(__file__)), "media")
+    ),
+)
 
 
 @app.get("/", include_in_schema=False)
