@@ -16,7 +16,7 @@ async def test_create_media(
 ):
     file_data = {"file": (uploaded_file.filename, "file content")}
     response = await client.post(
-        f"{settings.API_PREFIX_V1}/media/",
+        f"{settings.API_PREFIX_V1}/medias/",
         headers=user_api_key,
         files=file_data,
     )

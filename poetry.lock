@@ -522,6 +522,24 @@ plugins = ["setuptools"]
 requirements-deprecated-finder = ["pip-api", "pipreqs"]
 
 [[package]]
+name = "jinja2"
+version = "3.1.2"
+description = "A very fast and expressive template engine."
+category = "main"
+optional = false
+python-versions = ">=3.7"
+files = [
+    {file = "Jinja2-3.1.2-py3-none-any.whl", hash = "sha256:6088930bfe239f0e6710546ab9c19c9ef35e29792895fed6e6e31a023a182a61"},
+    {file = "Jinja2-3.1.2.tar.gz", hash = "sha256:31351a702a408a9e7595a8fc6150fc3f43bb6bf7e319770cbc0db9df9437e852"},
+]
+
+[package.dependencies]
+MarkupSafe = ">=2.0"
+
+[package.extras]
+i18n = ["Babel (>=2.7)"]
+
+[[package]]
 name = "mako"
 version = "1.2.4"
 description = "A super-fast templating language that borrows the best ideas from the existing templating languages."
@@ -617,7 +635,7 @@ files = [
 name = "mypy"
 version = "1.1.1"
 description = "Optional static typing for Python"
-category = "main"
+category = "dev"
 optional = false
 python-versions = ">=3.7"
 files = [
@@ -663,7 +681,7 @@ reports = ["lxml"]
 name = "mypy-extensions"
 version = "1.0.0"
 description = "Type system extensions for programs checked with the mypy type checker."
-category = "main"
+category = "dev"
 optional = false
 python-versions = ">=3.5"
 files = [
@@ -1034,7 +1052,7 @@ sqlcipher = ["sqlcipher3-binary"]
 name = "sqlalchemy-stubs"
 version = "0.4"
 description = "SQLAlchemy stubs and mypy plugin"
-category = "main"
+category = "dev"
 optional = false
 python-versions = "*"
 files = [
@@ -1093,6 +1111,18 @@ factory-boy = ">=3.2.0"
 typing-extensions = ">=4.2.0,<5.0.0"
 
 [[package]]
+name = "types-setuptools"
+version = "67.6.0.5"
+description = "Typing stubs for setuptools"
+category = "dev"
+optional = false
+python-versions = "*"
+files = [
+    {file = "types-setuptools-67.6.0.5.tar.gz", hash = "sha256:3a708e66c7bdc620e4d0439f344c750c57a4340c895a4c3ed2d0fc4ae8eb9962"},
+    {file = "types_setuptools-67.6.0.5-py3-none-any.whl", hash = "sha256:dae5a4a659dbb6dba57773440f6e2dbdd8ef282dc136a174a8a59bd33d949945"},
+]
+
+[[package]]
 name = "typing-extensions"
 version = "4.5.0"
 description = "Backported and Experimental Type Hints for Python 3.7+"
@@ -1126,4 +1156,4 @@ standard = ["colorama (>=0.4)", "httptools (>=0.5.0)", "python-dotenv (>=0.13)",
 [metadata]
 lock-version = "2.0"
 python-versions = "^3.11"
-content-hash = "bd6c89c142fd300f324d16dcb981697739067ee67b0546099c62d1c05ea89372"
+content-hash = "32a0642d3a02c081f181b05af00d853ee17ce72d405befea9948deac8f8ccc06"

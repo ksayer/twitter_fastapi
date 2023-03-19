@@ -95,7 +95,8 @@ async def test_crud_deleting_alien_like(db: AsyncSession):
 @pytest.mark.parametrize('users_twits', [...], indirect=True)
 async def test_crud_get_users_twit(db: AsyncSession, users_twits: tuple):
     user_1, user_2 = users_twits
+    await TwitFactory.create()
     twits_user_2 = await crud.twit.get_users_twits(db, user_id=user_2.id)
     twits_user_1 = await crud.twit.get_users_twits(db, user_id=user_1.id)
-    assert len(twits_user_2) == 2
-    assert len(twits_user_1) == 1
+    assert len(twits_user_2) == 3
+    assert len(twits_user_1) == 3
