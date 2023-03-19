@@ -12,10 +12,10 @@ uvicorn = "^0.20.0"
 pydantic = {extras = ["dotenv"], version = "^1.10.4"}
 sqlalchemy = "^2.0.2"
 alembic = "^1.9.2"
-sqlalchemy-stubs = "^0.4"
 asyncpg = "^0.27.0"
 python-multipart = "^0.0.6"
 aiofiles = "^23.1.0"
+jinja2 = "^3.1.2"
 
 
 [tool.poetry.group.linters.dependencies]
@@ -33,6 +33,8 @@ httpx = "^0.23.3"
 types-aiofiles = "^22.1.0.9"
 factory-boy = "^3.2.1"
 types-factory-boy = "^0.4.0"
+types-setuptools = "^67.6.0.5"
+sqlalchemy-stubs = "^0.4"
 
 [build-system]
 requires = ["poetry-core"]

@@ -11,7 +11,7 @@ pytestmark = pytest.mark.asyncio
 
 async def test_create_twit(client: AsyncClient, db: AsyncSession, user_api_key: dict):
     twit = TwitFactory.build()
-    url = f'{settings.API_PREFIX_V1}/twits/'
+    url = f'{settings.API_PREFIX_V1}/tweets/'
     response = await client.post(url, json=twit.to_json(), headers=user_api_key)
     assert response.status_code == 201
     twits = await crud.twit.get_multi(db)
@@ -21,7 +21,7 @@ async def test_create_twit(client: AsyncClient, db: AsyncSession, user_api_key: 
 async def test_create_twit_with_media(
     client: AsyncClient, db: AsyncSession, user_api_key: dict, twit_with_media
 ):
-    url = f'{settings.API_PREFIX_V1}/twits/'
+    url = f'{settings.API_PREFIX_V1}/tweets/'
     response = await client.post(url, json=twit_with_media, headers=user_api_key)
     assert response.status_code == 201
     twits = await crud.twit.get_multi(db)
@@ -31,7 +31,7 @@ async def test_create_twit_with_media(
 
 
 async def test_deleting_twit(client: AsyncClient, db: AsyncSession, user_api_key: dict):
-    url = f'{settings.API_PREFIX_V1}/twits/1/'
+    url = f'{settings.API_PREFIX_V1}/tweets/1/'
     twits = await crud.twit.get_multi(db)
     assert len(twits) == 1
     response = await client.delete(url, headers=user_api_key)
@@ -45,7 +45,7 @@ async def test_deleting_wrong_twit(
 ):
     user = await UserFactory.create()
     headers = {'api-key': user.key}
-    url = f'{settings.API_PREFIX_V1}/twits/1/'
+    url = f'{settings.API_PREFIX_V1}/tweets/1/'
     twits = await crud.twit.get_multi(db)
     assert len(twits) == 1
     response = await client.delete(url, headers=headers)
@@ -58,7 +58,7 @@ async def test_api_setting_like(
     client: AsyncClient, db: AsyncSession, user_api_key: dict
 ):
     twit = await TwitFactory.create()
-    url = f'{settings.API_PREFIX_V1}/twits/{twit.tweet_id}/likes/'
+    url = f'{settings.API_PREFIX_V1}/tweets/{twit.tweet_id}/likes/'
     response = await client.post(url, headers=user_api_key)
     assert response.status_code == 200
     twit = await crud.twit.get(db, tweet_id=twit.tweet_id)
@@ -69,7 +69,7 @@ async def test_api_setting_like(
 
 async def test_api_deleting_like(client: AsyncClient, db: AsyncSession):
     like = await LikeFactory.create()
-    url = f'{settings.API_PREFIX_V1}/twits/{like.twit_id}/likes/'
+    url = f'{settings.API_PREFIX_V1}/tweets/{like.twit_id}/likes/'
     response = await client.delete(url, headers={'api-key': like.user.key})
     assert response.status_code == 200
 
@@ -78,7 +78,7 @@ async def test_api_deleting_alien_like(
     client: AsyncClient, db: AsyncSession, user_api_key: dict
 ):
     like = await LikeFactory.create()
-    url = f'{settings.API_PREFIX_V1}/twits/{like.twit_id}/likes/'
+    url = f'{settings.API_PREFIX_V1}/tweets/{like.twit_id}/likes/'
     response = await client.delete(url, headers=user_api_key)
     assert response.status_code == 422
 
@@ -96,7 +96,7 @@ async def test_get_users_twits(client: AsyncClient, db: AsyncSession, twit_with_
     await FollowFactory.create(follower=user_1, following=user_3)
     await LikeFactory.create(user=user_1, twit=twit_user_2)
     await LikeFactory.create(user=user_2, twit=twit_user_2)
-    url = f'{settings.API_PREFIX_V1}/twits/'
+    url = f'{settings.API_PREFIX_V1}/tweets/'
     response = await client.get(url, headers={'api-key': user_1.key})
     assert response.status_code == 200
     json_response = {

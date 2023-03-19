@@ -1,7 +1,7 @@
 from typing import Any
 
 from fastapi.encoders import jsonable_encoder
-from sqlalchemy import select
+from sqlalchemy import or_, select
 from sqlalchemy.ext.asyncio import AsyncSession
 from sqlalchemy.orm import subqueryload
 
@@ -61,7 +61,7 @@ class CRUDTwit(CRUDBase[Twit, schemas.TwitIn]):
             )
             .join(User, onclause=Twit.user_id == User.id)
             .join(Follow, onclause=Follow.following_id == User.id)
-            .filter(Follow.follower_id == user_id)
+            .where(or_(Follow.follower_id == user_id, Twit.user_id == user_id))
         )
         twits = await db.execute(query)
         twits = twits.scalars().unique().all()
