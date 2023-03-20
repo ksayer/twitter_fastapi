@@ -39,11 +39,13 @@ class CRUDTwit(CRUDBase[Twit, schemas.TwitIn]):
         return True
 
     async def set_like(self, db: AsyncSession, twit_id: int, user_id: int):
+        """Set like on twit, but If like exists - remove this like"""
         twit: Any = await self.get(db, tweet_id=twit_id)
         user = await crud.user.get(db, id=user_id)
         if user in twit.liked_users:
-            raise ValidationError(self.model.__tablename__)
-        twit.liked_users.append(user)
+            twit.liked_users.remove(user)
+        else:
+            twit.liked_users.append(user)
         await db.commit()
         return twit
 
@@ -53,7 +55,9 @@ class CRUDTwit(CRUDBase[Twit, schemas.TwitIn]):
         await db.commit()
         return True
 
-    async def get_users_twits(self, db: AsyncSession, user_id: int):
+    async def get_users_twits(
+        self, db: AsyncSession, user_id: int, offset: int = 0, limit: int = 100
+    ):
         followers_subquery = (
             select(Follow.following_id)
             .where(Follow.follower_id == user_id)
@@ -71,7 +75,10 @@ class CRUDTwit(CRUDBase[Twit, schemas.TwitIn]):
                     Twit.user_id.in_(select(followers_subquery)),  # type: ignore
                 )
             )
-        ).order_by(desc('tweet_id'))
+            .offset(offset)
+            .limit(limit)
+            .order_by(desc('tweet_id'))
+        )
         twits = await db.execute(query)
         twits = twits.scalars().unique().all()
         return twits
