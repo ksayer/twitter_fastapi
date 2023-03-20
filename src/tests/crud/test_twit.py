@@ -74,8 +74,9 @@ async def test_crud_setting_like(db: AsyncSession):
     twit = await crud.twit.get(db, tweet_id=twit.tweet_id)
     assert len(twit.liked_users) == 1
     assert twit.liked_users[0].id == user.id
-    with pytest.raises(ValidationError):
-        await crud.twit.set_like(db, user_id=user.id, twit_id=twit.tweet_id)
+    await crud.twit.set_like(db, user_id=user.id, twit_id=twit.tweet_id)
+    twit = await crud.twit.get(db, tweet_id=twit.tweet_id)
+    assert len(twit.liked_users) == 0
 
 
 async def test_crud_deleting_like(db: AsyncSession):

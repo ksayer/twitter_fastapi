@@ -76,8 +76,15 @@ async def delete_like(
     description="Get all twits of current user' followings",
 )
 async def get_users_twits(
+    offset: int = 0,
+    limit: int = 1000,
     db: AsyncSession = Depends(deps.get_session),
     current_user: models.User = Depends(deps.get_current_user),
 ) -> dict:
-    twits = await crud.twit.get_users_twits(db, user_id=current_user.id)
+    twits = await crud.twit.get_users_twits(
+        db,
+        user_id=current_user.id,
+        offset=offset,
+        limit=limit,
+    )
     return {"tweets": twits}
