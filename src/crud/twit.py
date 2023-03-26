@@ -1,14 +1,14 @@
 from typing import Any
 
 from fastapi.encoders import jsonable_encoder
-from sqlalchemy import desc, or_, select
+from sqlalchemy import desc, func, or_, select
 from sqlalchemy.ext.asyncio import AsyncSession
 from sqlalchemy.orm import subqueryload
 
 from src import crud, schemas
 from src.core.exceptions import ValidationError
 from src.crud.base import CRUDBase
-from src.models import MediaTwit, Twit, User
+from src.models import Like, MediaTwit, Twit, User
 from src.models.user import Follow
 
 
@@ -69,15 +69,17 @@ class CRUDTwit(CRUDBase[Twit, schemas.TwitIn]):
                 subqueryload(Twit.mediatwit).subqueryload(MediaTwit.media)
             )
             .join(User, onclause=Twit.user_id == User.id)
+            .outerjoin(Like, Twit.tweet_id == Like.twit_id)
             .where(
                 or_(
                     Twit.user_id == user_id,
                     Twit.user_id.in_(select(followers_subquery)),  # type: ignore
                 )
             )
+            .group_by(Twit.tweet_id)
             .offset(offset)
             .limit(limit)
-            .order_by(desc('tweet_id'))
+            .order_by(desc(func.count(Like.user_id)))
         )
         twits = await db.execute(query)
         twits = twits.scalars().unique().all()

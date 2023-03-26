@@ -103,13 +103,6 @@ async def test_get_users_twits(client: AsyncClient, db: AsyncSession, twit_with_
     json_response = {
         'tweets': [
             {
-                'id': twit_user_3.tweet_id,
-                'content': twit_user_3.tweet_data,
-                'attachments': [f'{settings.MEDIA_URL}{m}' for m in twit_user_3.media],
-                'author': {'name': user_3.name, 'id': user_3.id},
-                'likes': [],
-            },
-            {
                 'id': twit_user_2.tweet_id,
                 'content': twit_user_2.tweet_data,
                 'attachments': [],
@@ -118,6 +111,13 @@ async def test_get_users_twits(client: AsyncClient, db: AsyncSession, twit_with_
                     {'name': user_1.name, 'id': user_1.id},
                     {'name': user_2.name, 'id': user_2.id},
                 ],
+            },
+            {
+                'id': twit_user_3.tweet_id,
+                'content': twit_user_3.tweet_data,
+                'attachments': [f'{settings.MEDIA_URL}{m}' for m in twit_user_3.media],
+                'author': {'name': user_3.name, 'id': user_3.id},
+                'likes': [],
             },
             {
                 'id': twit_user_1.tweet_id,
