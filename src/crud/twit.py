@@ -79,7 +79,7 @@ class CRUDTwit(CRUDBase[Twit, schemas.TwitIn]):
             .group_by(Twit.tweet_id)
             .offset(offset)
             .limit(limit)
-            .order_by(desc(func.count(Like.user_id)))
+            .order_by(desc(func.count(Like.user_id)), desc('tweet_id'))
         )
         twits = await db.execute(query)
         twits = twits.scalars().unique().all()
